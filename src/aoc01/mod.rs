@@ -78,7 +78,7 @@ struct MrTaxi {
 impl MrTaxi {
 	fn new() -> Self {
 		Self {
-			point: Point{ x: 0, y: 0},
+			point: Point { x: 0, y: 0 },
 			direction: Direction::Up,
 			visited: Vec::new(),
 		}
@@ -86,11 +86,11 @@ impl MrTaxi {
 
 	fn change_direction(&mut self, new: &char) {
 		self.direction = match (&self.direction, new) {
-			(Direction::Up, 'R')   | (Direction::Down, 'L')  => { Direction::Right },
-			(Direction::Up, 'L')   | (Direction::Down, 'R')  => { Direction::Left },
-			(Direction::Left, 'L') | (Direction::Right, 'R') => { Direction::Down },
-			(Direction::Left, 'R') | (Direction::Right, 'L') => { Direction::Up },
-			(_, _) => { panic!("Invalid turn") },
+			(Direction::Up, 'R')   | (Direction::Down, 'L')  => Direction::Right,
+			(Direction::Up, 'L')   | (Direction::Down, 'R')  => Direction::Left,
+			(Direction::Left, 'L') | (Direction::Right, 'R') => Direction::Down,
+			(Direction::Left, 'R') | (Direction::Right, 'L') => Direction::Up,
+			(_, _) => { panic!("Invalid turn") }
 		}
 	}
 
