@@ -19,6 +19,21 @@ impl Keypad {
 	}
 }
 
+impl Keypad2 {
+	fn new_at(c: char) -> Keypad2 {
+		let mut k = Keypad2::new();
+		for y in 0..7 {
+			for x in 0..7 {
+				if k.keys[y][x] == c {
+					k.x = x;
+					k.y = y;
+				}
+			}
+		}
+		k
+	}
+}
+
 #[test]
 fn test_new() {
 	let keypad = Keypad::new_at(5);
@@ -106,4 +121,57 @@ fn test_1234() {
 	let result = part1(input);
 
 	assert_eq!(result, "1985");
+}
+
+/* Part 2 */
+#[test]
+fn test_2_1() {
+	/* ULL -> 5 */
+	let instructions = Instructions::new("ULL");
+
+	let mut keypad = Keypad2::new();
+	keypad.follow(instructions);
+
+	assert_eq!(keypad.value(), '5');
+}
+
+#[test]
+fn test_2_2() {
+	/* RRDDD -> A */
+	let instructions = Instructions::new("RRDDD");
+
+	let mut keypad = Keypad2::new();
+	keypad.follow(instructions);
+
+	assert_eq!(keypad.value(), 'D');
+}
+
+#[test]
+fn test_2_3() {
+	/* LURDL -> A */
+	let instructions = Instructions::new("LURDL");
+
+	let mut keypad = Keypad2::new_at('D');
+	keypad.follow(instructions);
+
+	assert_eq!(keypad.value(), 'B');
+}
+
+#[test]
+fn test_2_4() {
+	/* UUUUD -> 5 */
+	let instructions = Instructions::new("UUUUD");
+
+	let mut keypad = Keypad2::new_at('5');
+	keypad.follow(instructions);
+
+	assert_eq!(keypad.value(), '5');
+}
+
+#[test]
+fn test_2_1234() {
+	let input = "ULL\nRRDDD\nLURDL\nUUUUD";
+	let result = part2(input);
+
+	assert_eq!(result, "5DB3");
 }
