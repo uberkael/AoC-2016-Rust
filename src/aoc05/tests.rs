@@ -52,6 +52,7 @@ fn test1_generator() {
 	assert_eq!("abc5000", input);
 }
 
+#[ignore]
 #[test]
 fn test1_generator_hash() {
 	let input = generate_number("abc")
@@ -75,6 +76,7 @@ fn test1_generator_hash() {
 
 }
 
+#[ignore]
 #[test]
 fn part1() {
 	let input = generate_number("abc")

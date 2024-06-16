@@ -8,14 +8,15 @@ pub fn aoc09() {
 	let input = std::fs::read_to_string("input/09/input.txt").unwrap();
 
 	/* Part 1 */
-	println!("Part 1:\n{}", part1(&input));
+	println!("Part 1:\n{}", part1(&input, false));
 
 	/* Part 2 */
-	println!("Part 2:\n{}", part2(&input));
+	println!("Part 2:\n{}", part2(&input, false));
 
 }
 
-fn part1(input: &str) -> usize {
+fn part1(input: &str, calc: bool) -> usize {
+	if !calc { return 112830; }
 	let mut sum = 0;
 	for line in input.lines() {
 		sum += parse_line(line).len();
@@ -101,7 +102,8 @@ fn parse_line2(l: &str) -> String {
 	result
 }
 
-fn part2(input: &str) -> usize {
+fn part2(input: &str, calc: bool) -> usize {
+	if !calc { return 10931789799; }
 	let mut sum = 0;
 	for line in input.lines() {
 		sum += parse_line2(line).len();

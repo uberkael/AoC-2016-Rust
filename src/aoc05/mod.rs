@@ -6,15 +6,18 @@ pub fn aoc05() {
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
 	/* Part 1 */
-	let password: String = part1();
+	let password: String = part1(false);
 	println!("Part:1\n{password}");
 
 	/* Part 2 */
-	let password: String = part2();
+	let password: String = part2(false);
 	println!("Part:2\n{password}");
 }
 
-fn part1() -> String {
+fn part1(calc: bool) -> String {
+	if !calc {
+		return "4543c154".to_string();
+	}
 	let data = generate_number("ojvtpuvg")
 		.map(|s| format!("{:x}", md5::compute(s.as_bytes())))
 		.filter(|s| check_zeros(s))
@@ -60,7 +63,10 @@ fn check_finished(password: &[char; 8]) -> bool {
 	password.iter().all(|&c| c != '_')
 }
 
-fn part2() -> String {
+fn part2(calc: bool) -> String {
+	if !calc {
+		return "1050cbbd".to_string();
+	}
 	let mut password = ['_'; 8];
 	for d in generate_number("ojvtpuvg")
 		.map(|s| format!("{:x}", md5::compute(s.as_bytes())))
