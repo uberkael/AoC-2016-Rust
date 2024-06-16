@@ -49,3 +49,28 @@ fn test1_4() {
 	assert_ne!(checksum, "decoy");
 	assert!(!room.is_real());
 }
+
+/* Part 2 */
+
+#[test]
+fn test2_cypher() {
+	assert_eq!(cypher('a', 1), 'b');
+	assert_eq!(cypher('z', 1), 'a');
+	assert_eq!(cypher('a', 26), 'a');
+	assert_eq!(cypher('a', 27), 'b');
+	assert_eq!(cypher('-', 1), ' ');
+}
+
+#[test]
+fn test2_cypher2() {
+	let input = "qzmt-zixmtkozy-ivhz";
+	let name = input.chars().map(|c| cypher(c, 343)).collect::<String>();
+	assert_eq!(name, "very encrypted name");
+}
+
+#[test]
+fn test2_room() {
+	let input = "qzmt-zixmtkozy-ivhz-343[abcde]";
+	let room = Room::new(input);
+	assert_eq!(room.decrypt(), "very encrypted name");
+}

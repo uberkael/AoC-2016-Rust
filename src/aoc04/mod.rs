@@ -12,6 +12,9 @@ pub fn aoc04() {
 	/* Part 1 */
 	println!("Part 1:\n{}", parte1(&input));
 
+	/* Part 2 */
+	println!("Part 2:\n{}", parte2(&input));
+
 }
 
 fn parte1(input: &str) -> usize {
@@ -28,9 +31,21 @@ struct Room {
 impl Room {
 	fn new(s: &str) -> Room {
 		let mut parts: Vec<&str> = s.split('-').collect();
-		let mut last_part: Vec<&str> = parts.pop().unwrap_or_default().split('[').collect();
-		let checksum = last_part.pop().unwrap_or_default().replace("]", "").to_string();
-		let sector = last_part.pop().unwrap_or_default().parse::<usize>().unwrap_or_default();
+		let mut last_part: Vec<&str> = parts
+			.pop()
+			.unwrap_or_default()
+			.split('[')
+			.collect();
+		let checksum = last_part
+			.pop()
+			.unwrap_or_default()
+			.replace("]", "")
+			.to_string();
+		let sector = last_part
+			.pop()
+			.unwrap_or_default()
+			.parse::<usize>()
+			.unwrap_or_default();
 		let name = parts.join("-");
 		Room { name, sector, checksum }
 	}
@@ -50,4 +65,37 @@ impl Room {
 	fn is_real(&self) -> bool {
 		self.generate_checksum() == self.checksum
 	}
+
+	/* Part 2 */
+
+	fn decrypt(&self) -> String {
+		self.name.chars().map(|c| cypher(c, self.sector)).collect()
+	}
+}
+
+fn cypher(c: char, n: usize) -> char {
+	if c == '-' {
+		return ' ';
+	}
+	let z = 'z' as usize;
+	let n = n % 26;
+	let c = c as usize + n;
+	if c > z {
+		(c as u8 - 26) as char
+	} else {
+		(c as u8) as char
+	}
+}
+
+fn parte2(input: &str) -> usize {
+	let rooms: Vec<Room> = input.lines().map(|x| Room::new(x)).collect();
+	let reals = rooms.iter().filter(|r| r.is_real());
+	for room in reals {
+		let decrypted = room.decrypt();
+		// println!("{}", decrypted);
+		if decrypted.contains("north") {
+			return room.sector;
+		}
+	}
+	0
 }
