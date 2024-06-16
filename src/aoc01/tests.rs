@@ -56,6 +56,5 @@ fn test4() {
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R8, R4, R4, R8");
 	mr_taxi.moves2(instructions);
-	println!("{:?}", mr_taxi.visited);
 	assert_eq!(mr_taxi.distance(), 4);
 }

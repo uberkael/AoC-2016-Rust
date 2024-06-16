@@ -37,3 +37,21 @@ fn test_check_triangle() {
 	let t : Triangle = [545, 626, 626];
 	assert_eq!(check_triangle(t), true);
 }
+
+/* Test 2 */
+#[test]
+fn test2_parse_input2() {
+	let input = "101 301 501\n102 302 502\n103 303 503";
+	let triangles = parse_input2(input);
+	assert!(triangles.len() == 3);
+	assert_eq!(triangles[0], [101, 102, 103]);
+	assert_eq!(triangles[1], [301, 302, 303]);
+	assert_eq!(triangles[2], [501, 502, 503]);
+
+	let input = "101 301 501\n102 302 502\n103 303 503\n201 401 601\n202 402 602\n203 403 603";
+	let triangles = parse_input2(input);
+	assert!(triangles.len() == 6);
+	assert_eq!(triangles[3], [201, 202, 203]);
+	assert_eq!(triangles[4], [401, 402, 403]);
+	assert_eq!(triangles[5], [601, 602, 603]);
+}
