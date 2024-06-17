@@ -1,0 +1,28 @@
+use super::*;
+
+#[test]
+fn test1_hypernet() {
+	assert!(check_hypernet("aaaa[abba]qrst"));
+	assert!(check_hypernet("aaaa[abcdeabbaa]qrst"));
+	assert!(check_hypernet("aaaa[aaaa]qrst[abba]"));
+	assert!(check_hypernet("jpgkrbovswsjnbcj[bjybzimnzszdkqj]mvwmgdithrxecpselt[kghbhnctqnhhxxhdro]drttsuyvtuuygdtfaf[zohajxyfyjnqrigq]gadarjzfafqxsjxk"));
+	assert!(!check_hypernet("aaaa[abcde]qrst"));
+	assert!(!check_hypernet("aaaa[aaaa]qrst"));
+	assert!(!check_hypernet("wysextplwqpvipxdv[srzvtwbfzqtspxnethm]syqbzgtboxxzpwr[kljvjjkjyojzrstfgrw]obdhcczonzvbfby[svotajtpttohxsh]cooktbyumlpxostt"));
+}
+
+#[test]
+fn test1_abba() {
+	assert!(check_abba("abba[mnop]qrst"));
+	assert!(check_abba("abcd[bddb]xyyx"));
+	assert!(!check_abba("aaaa[qwer]tyui"));
+	assert!(check_abba("ioxxoj[asdfgh]zxcvbn"));
+}
+
+#[test]
+fn test1_tls() {
+	assert!(check_tls("abba[mnop]qrst"));
+	assert!(!check_tls("abcd[bddb]xyyx"));
+	assert!(!check_tls("aaaa[qwer]tyui"));
+	assert!(check_tls("ioxxoj[asdfgh]zxcvbn"));
+}
