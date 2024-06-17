@@ -10,7 +10,10 @@ pub fn aoc06() {
 	let input = std::fs::read_to_string("input/06/input.txt").unwrap();
 
 	/* Part 1 */
-	println!("Part 1: {}", part1(&input));
+	println!("Part 1:\n{}", part1(&input));
+
+	/* Part 2 */
+	println!("Part 2:\n{}", part2(&input));
 }
 
 fn part1(input: &str) -> String {
@@ -44,4 +47,23 @@ fn dict_max_char(dictionaries: Vec<Counter>) -> String {
 		.iter()
 		.map(|counter| max_char(counter))
 		.collect()
+}
+
+/* Part 2 */
+
+fn min_char(counter: &Counter) -> char {
+	*counter.iter().min_by_key(|&(_, count)| count).unwrap().0
+}
+
+fn dict_min_char(dictionaries: Vec<Counter>) -> String {
+	dictionaries
+		.iter()
+		.map(|counter| min_char(counter))
+		.collect()
+}
+
+fn part2(input: &str) -> String {
+	let data = input.lines().collect::<Vec<_>>();
+	let dictionaries = dictionaries(&data);
+	dict_min_char(dictionaries)
 }
