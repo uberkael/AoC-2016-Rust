@@ -8,7 +8,10 @@ pub fn aoc08() {
 	let input = std::fs::read_to_string("input/08/input.txt").unwrap();
 
 	/* Part 1 */
-	println!("{}", part1(&input));
+	println!("Part 1:\n{}", part1(&input));
+
+	/* Part 2 */
+	println!("Part 2:\n{}", part2(&input));
 
 }
 
@@ -32,16 +35,29 @@ fn parse_command(s: &str) -> Command {
 	let mut parts = s.split_whitespace();
 	match parts.next().unwrap_or_default() {
 		"rect" => {
-			let data = parts.next().unwrap_or_default().split("x").collect::<Vec<&str>>();
+			let data = parts
+				.next()
+				.unwrap_or_default()
+				.split("x")
+				.collect::<Vec<&str>>();
 			let w: usize = data[0].parse().unwrap_or_default();
 			let h: usize = data[1].parse().unwrap_or_default();
 			Command::Rect(w, h)
 		},
 		"rotate" => {
 			let t = parts.next().unwrap_or_default();
-			let n = parts.next().unwrap_or_default().split("=").nth(1).unwrap_or_default().parse().unwrap_or_default();
+			let n = parts.next()
+				.unwrap_or_default()
+				.split("=")
+				.nth(1)
+				.unwrap_or_default()
+				.parse()
+				.unwrap_or_default();
 			let _ = parts.next();
-			let by: usize = parts.next().unwrap_or_default().parse().unwrap_or_default();
+			let by: usize = parts.next()
+				.unwrap_or_default()
+				.parse()
+				.unwrap_or_default();
 			match t {
 				"row" => Command::Row(n, by),
 				"column" => Command::Col(n, by),
@@ -104,4 +120,27 @@ impl Scr for Screen {
 	fn run(&mut self, c: Command) {
 		c.run(self);
 	}
+}
+
+/* Part 2 */
+impl std::fmt::Display for Screen {
+	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+		for row in self.0.iter() {
+			for &pixel in row.iter() {
+				write!(f, "{}", if pixel { '#' } else { '.' })?;
+			}
+			writeln!(f)?;
+		}
+		Ok(())
+	}
+}
+
+
+fn part2(s: &str) -> Screen {
+	let mut screen = Screen([[false; 50]; 6]);
+	for line in s.lines() {
+		let command = parse_command(line);
+		screen.run(command);
+	}
+	screen
 }
