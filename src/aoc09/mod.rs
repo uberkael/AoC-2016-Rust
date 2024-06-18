@@ -10,6 +10,9 @@ pub fn aoc09() {
 	/* Part 1 */
 	println!("Part 1:\n{}", part1(&input));
 
+	/* Part 2 */
+	println!("Part 2:\n{}", part2(&input));
+
 }
 
 fn part1(input: &str) -> usize {
@@ -62,4 +65,46 @@ fn parse_line(l: &str) -> String {
 		}
 	}
 	result
+}
+
+/* Part 2 */
+
+fn parse_line2(l: &str) -> String {
+	let re = regex::Regex::new(r"\(\d+x\d+\)").unwrap();
+	let mut result = String::new();
+	let mut indicator = String::new();
+	let mut inside_indicator = false;
+	let mut ignore_chars = 0;
+
+	for (i, c) in l.chars().enumerate() {
+		if ignore_chars > 0 {
+			ignore_chars -= 1;
+			continue;
+		}
+		if c == '(' {
+			inside_indicator = true;
+		} else if c == ')' {
+			inside_indicator = false;
+			let [len, rep] = parse_indicator(&indicator);
+			result.push_str(&decompress(&l[i+1..i+1+len], [len, rep]));
+			ignore_chars = len;
+			indicator.clear();
+		} else if inside_indicator {
+			indicator.push(c);
+		} else {
+			result.push(c);
+		}
+	}
+	if re.is_match(&result) {
+		result = parse_line2(&result);
+	}
+	result
+}
+
+fn part2(input: &str) -> usize {
+	let mut sum = 0;
+	for line in input.lines() {
+		sum += parse_line2(line).len();
+	}
+	sum
 }

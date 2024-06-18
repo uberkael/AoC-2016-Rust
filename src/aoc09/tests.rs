@@ -36,3 +36,13 @@ fn test_len() {
 	assert_eq!(parse_line("(6x1)(1x3)A").len(), 6);
 	assert_eq!(parse_line("X(8x2)(3x3)ABCY").len(), 18);
 }
+
+/* Part 2 */
+
+#[test]
+fn test_parse_line2() {
+	assert_eq!(parse_line2("(3x3)XYZ"), "XYZXYZXYZ");
+	assert_eq!(parse_line2("X(8x2)(3x3)ABCY"), "XABCABCABCABCABCABCY");
+	assert_eq!(parse_line2("(27x12)(20x12)(13x14)(7x10)(1x12)A"), "A".repeat(241920));
+	assert_eq!(parse_line2("(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN").len(), 445);
+}
