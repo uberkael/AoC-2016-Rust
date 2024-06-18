@@ -2,7 +2,6 @@
 mod tests;
 
 use regex::Regex;
-use fancy_regex::Regex as FRegex;
 
 pub fn aoc07() {
 	println!("\nDay 7: Internet Protocol Version 7");
@@ -19,26 +18,33 @@ fn part1(input: &str) -> usize {
 	input.lines().filter(|l| check_tls(l)).count()
 }
 
+fn check_palindrome(s: &str) -> bool {
+	if s.len() != 4 { return false; }
+	s[0..1] == s[3..4] && s[1..2] == s[2..3] && s[0..1] != s[1..2]
+}
+
 fn check_hypernet(s: &str) -> bool {
-	let re_hypernet = FRegex::new(r".*?(.)(?!\1)(.)\2\1.*").expect("Invalid regex");
 	let re_extract = Regex::new(r"\[(.*?)\]").expect("Invalid regex");
 	for m in re_extract.find_iter(s) {
 		let ss = m.as_str();
-		if re_hypernet.is_match(ss).unwrap_or_default() {
-			return true;
+		let ss = &ss[1..ss.len()-1];
+		for i in 0..ss.len()-3 {
+			if check_palindrome(&ss[i..i+4]) {
+				return true;
+			}
 		}
 	}
 	false
 }
 
 fn check_abba(s: &str) -> bool {
-	let re = FRegex::new(r"(.)(?!\1)(.)\2\1").expect("Invalid regex");
 	let re_cut = Regex::new(r"\[.*?\]").expect("Invalid regex");
-
 	let parts: Vec<&str> = re_cut.split(s).collect();
 	for part in parts {
-		if re.is_match(part).unwrap_or_default() {
-			return true;
+		for i in 0..part.len()-3 {
+			if check_palindrome(&part[i..i+4]) {
+				return true;
+			}
 		}
 	}
 	false

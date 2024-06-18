@@ -1,6 +1,14 @@
 use super::*;
 
 #[test]
+fn test1_palindrome() {
+	assert!(check_palindrome("abba"));
+	assert!(check_palindrome("xyyx"));
+	assert!(!check_palindrome("aaaa"));
+	assert!(!check_palindrome("ioxx"));
+}
+
+#[test]
 fn test1_hypernet() {
 	assert!(check_hypernet("aaaa[abba]qrst"));
 	assert!(check_hypernet("aaaa[abcdeabbaa]qrst"));
