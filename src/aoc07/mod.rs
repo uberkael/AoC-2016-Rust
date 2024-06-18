@@ -10,7 +10,10 @@ pub fn aoc07() {
 	let input = std::fs::read_to_string("input/07/input.txt").unwrap();
 
 	/* Parte 1 */
-	println!("{}", part1(&input));
+	println!("Part 1:\n{}", part1(&input));
+
+	/* Parte 2 */
+	println!("Part 2:\n{}", part2(&input));
 
 }
 
@@ -55,4 +58,40 @@ fn check_tls(s: &str) -> bool {
 		return false;
 	}
 	check_abba(s)
+}
+
+/* Part 2 */
+
+fn check_aba(s: &str) -> bool {
+	if s.len() != 3 { return false; }
+	s[0..1] == s[2..3] && s[0..1] != s[1..2]
+}
+
+fn check_ssl(s: &str) -> bool {
+	let re_cut = Regex::new(r"\[.*?\]").expect("Invalid regex");
+	let abas: Vec<&str> = re_cut.split(s).collect();
+	let babs: Vec<&str> = re_cut
+		.find_iter(s)
+		.map(|m| { let ms = m.as_str(); &ms[1..ms.len()-1] })
+		.collect();
+
+	for aba in abas {
+		for i in 0..aba.len()-2 {
+			if check_aba(&aba[i..i+3]) {
+				let ms_rev = inverse(&aba[i..i+3]);
+				if babs.iter().any(|bab| bab.contains(&ms_rev)) {
+					return true;
+				}
+			}
+		}
+	}
+	false
+}
+
+fn inverse(s: &str) -> String {
+	format!("{}{}{}", &s[1..2], &s[0..1], &s[1..2])
+}
+
+fn part2(input: &str) -> usize {
+	input.lines().filter(|l| check_ssl(l)).count()
 }

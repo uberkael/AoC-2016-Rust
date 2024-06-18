@@ -34,3 +34,20 @@ fn test1_tls() {
 	assert!(!check_tls("aaaa[qwer]tyui"));
 	assert!(check_tls("ioxxoj[asdfgh]zxcvbn"));
 }
+
+/* Part 2 */
+
+#[test]
+fn test2_aba() {
+	assert!(check_aba("aba"));
+	assert!(check_aba("xyx"));
+	assert!(!check_aba("aaa"));
+}
+
+#[test]
+fn test2_ssl() {
+	assert!(check_ssl("aba[bab]xyz"));
+	assert!(!check_ssl("xyx[xyx]xyx"));
+	assert!(check_ssl("aaa[kek]eke"));
+	assert!(check_ssl("zazbz[bzb]cdb"));
+}
