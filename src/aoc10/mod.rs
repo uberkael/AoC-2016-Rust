@@ -156,3 +156,43 @@ fn bot_give(mut bots: HashMap<usize, Bot>, n: usize, mut bot: Bot) -> HashMap<us
 fn check_finish(bot: &Bot) -> bool {
 	bot.values == [17, 61] || bot.values == [61, 17]
 }
+
+/* Part 2 */
+
+fn part2(input: &str) -> isize {
+	let mut bots = bots_generate(input);
+	bots = bot_configure(bots, input);
+	bot_run2(bots)
+}
+
+fn bot_run2(mut bots: HashMap<usize, Bot>) -> isize {
+	let mut outputs = [-1; 21];
+	let mut finished = false;
+	while !finished {
+		for (n, bot) in bots.clone() {
+			if bot.values.len() == 2 {
+				(bots, outputs) = bot_give2(bots, n, bot, outputs);
+			}
+		}
+		finished = bots.iter().all(|(_, bot)| bot.values.len() < 2);
+	}
+	return outputs.iter().take(3).product();
+}
+
+fn bot_give2(mut bots: HashMap<usize, Bot>, n: usize, mut bot: Bot, mut outputs: [Chip; 21]) -> (HashMap<usize, Bot>, [Chip; 21]) {
+	let low = bot.values.iter().min().unwrap_or(&0).clone();
+	let high = bot.values.iter().max().unwrap_or(&0).clone();
+	match bot.to[0] {
+		To::Bot(n) => {bots.insert(n, bot_chip(bots[&n].clone(), low)); ()},
+		To::Output(n) => outputs[n] = low,
+		To::None => (),
+	};
+	match bot.to[1] {
+		To::Bot(n) => {bots.insert(n, bot_chip(bots[&n].clone(), high)); ()},
+		To::Output(n) => outputs[n] = high,
+		To::None => (),
+	};
+	bot.values.clear();
+	bots.insert(n, bot);
+	(bots, outputs)
+}
