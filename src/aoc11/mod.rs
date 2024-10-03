@@ -16,6 +16,15 @@ pub fn aoc11() {
 		vec![]
 	];
 	println!("{}", part1(state));
+
+	/* Part 2 */
+	let state = vec![
+		vec!["E", "PG", "TG", "TM", "AG", "RG", "RM", "CG", "CM", "EG", "EM", "DG", "DM"],
+		vec!["PM", "AM"],
+		vec![],
+		vec![]
+	];
+	println!("{}", part1(state));
 }
 
 /* Part 1 */
