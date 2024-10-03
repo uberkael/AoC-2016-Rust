@@ -1,4 +1,8 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashSet, VecDeque};
+use std::hash::{Hash, Hasher};
+use std::collections::hash_map::DefaultHasher;
+use rayon::prelude::*;
+
 #[cfg(test)]
 mod tests;
 
@@ -18,65 +22,70 @@ pub fn aoc11() {
 	println!("{}", part1(state));
 
 	/* Part 2 */
-	let state = vec![
-		vec!["E", "PG", "TG", "TM", "AG", "RG", "RM", "CG", "CM", "EG", "EM", "DG", "DM"],
-		vec!["PM", "AM"],
-		vec![],
-		vec![]
-	];
-	println!("{}", part1(state));
+	// let state = vec![
+	// 	vec!["E", "PG", "TG", "TM", "AG", "RG", "RM", "CG", "CM", "EG", "EM", "DG", "DM"],
+	// 	vec!["PM", "AM"],
+	// 	vec![],
+	// 	vec![]
+	// ];
+	// println!("{}", part1(state));
 }
 
 /* Part 1 */
-fn part1(initial_state: Vec<Vec<&'static str>>) -> isize {
-	let mut visited = HashMap::new();
+pub fn part1(initial_state: Vec<Vec<&'static str>>) -> isize {
+	let visited = std::sync::Mutex::new(HashSet::new());
 	let mut queue = VecDeque::new();
 	queue.push_back((initial_state.clone(), 0));
-	visited.insert(encode_state(&initial_state), true);
-	while let Some(entry) = queue.pop_front() {
-		let (current_state, steps) = entry;
-		if finished(&current_state) {
+	visited.lock().unwrap().insert(encode_state(&initial_state));
+	while let Some((current, steps)) = queue.pop_front() {
+		if finished(&current) {
 			return steps;
 		}
-		let next_states = generate_states(&current_state);
-		for next_state in next_states {
-			let encoded = encode_state(&next_state);
-			if !visited.contains_key(&encoded) {
-				visited.insert(encoded, true);
-				queue.push_back((next_state, steps + 1));
-			}
+		// Procesar estados hijos en paralelo
+		let children: Vec<_> = generate_states(&current)
+			.par_iter()
+			.filter_map(|state| {
+				let encoded = encode_state(state);
+				if visited.lock().unwrap().insert(encoded) {
+					Some(state.clone())
+				} else {
+					None
+				}
+			})
+			.collect();
+		// Agregar al queue secuencialmente
+		for child in children {
+			queue.push_back((child, steps + 1));
 		}
 	}
 	-1
 }
 
-fn encode_state(state: &[Vec<&'static str>]) -> String {
-	let mut encoded = String::new();
-	for floor in state {
-		let mut items: Vec<&str> = floor.iter().copied().collect();
-		items.sort_unstable();
-		encoded.push_str(&format!("{}:", items.join(",")));
-	}
-	encoded
+fn encode_state(state: &[Vec<&'static str>]) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    for floor in state {
+        // Creamos una copia de los elementos del piso y los ordenamos para
+        // obtener una representación canónica independientemente del orden.
+        let mut items: Vec<&str> = floor.iter().copied().collect();
+        items.sort_unstable();
+        // Concatena los elementos del piso en el hasher.
+        items.hash(&mut hasher);
+        // Incorpora un delimitador (por ejemplo, un número fijo) para separar cada piso.
+        0xdead_beefu64.hash(&mut hasher);
+    }
+    hasher.finish()
 }
 
 fn find_elevator(state: &Vec<Vec<&'static str>>) -> usize {
-	for (i, floor) in state.iter().enumerate() {
-		if floor.get(0) == Some(&"E") {
-			return i;
-		}
-	}
-	usize::MAX
+	state
+		.iter()
+		.position(|floor| floor.get(0) == Some(&"E"))
+		.unwrap_or(usize::MAX)
 }
 
 fn finished(state: &Vec<Vec<&'static str>>) -> bool {
-	// print_state(state);
-	for i in 0..state.len() - 1 {
-		if !state[i].is_empty() {
-			return false;
-		}
-	}
-	true
+    // Se asume que todos los objetos en los pisos inferiores al último deben haber sido trasladados.
+    state.iter().take(state.len() - 1).all(|floor| floor.len() <= 1)
 }
 
 fn generate_floors(f1: &Vec<&'static str>, f2: &Vec<&'static str>) -> Vec<[Vec<&'static str>; 2]> {
@@ -202,21 +211,4 @@ fn generate_states(state: &Vec<Vec<&'static str>>) -> Vec<Vec<Vec<&'static str>>
 		}
 	}
 	new_states
-}
-
-fn print_floor(floor: &Vec<&'static str>) {
-	for f in floor {
-		print!("{}, ", f);
-	}
-	// flush
-	std::io::Write::flush(&mut std::io::stdout()).unwrap();
-}
-
-fn print_state(state: &Vec<Vec<&'static str>>) {
-	for (i, floor) in state.iter().enumerate().rev() {
-		print!("F{} - ", i + 1);
-		print_floor(floor);
-		println!();
-	}
-	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 }
