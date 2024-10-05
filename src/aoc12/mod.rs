@@ -7,7 +7,7 @@ pub fn aoc12() {
 	let input = std::fs::read_to_string("input/12/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
-
+	println!("Part 2:\n{}", part2(&input));
 }
 
 #[derive(Debug, PartialEq)]
@@ -92,6 +92,20 @@ fn reader(input: &str) -> Vec<Instruction> {
 fn part1(input: &str) -> usize {
 	let instructions = reader(input);
 	let mut registers: HashMap<char, isize> = HashMap::new();
+	let mut ip: isize = 0;
+	while (ip >= 0) && ((ip as usize) < instructions.len()) {
+		let instruction = &instructions[ip as usize];
+		ip += execute(instruction, &mut registers);
+	}
+	*registers.get(&'a').unwrap_or(&0) as usize
+}
+
+
+/* Part 2 */
+fn part2(input: &str) -> usize {
+	let instructions = reader(input);
+	let mut registers: HashMap<char, isize> = HashMap::new();
+	registers.insert('c', 1);
 	let mut ip: isize = 0;
 	while (ip >= 0) && ((ip as usize) < instructions.len()) {
 		let instruction = &instructions[ip as usize];
