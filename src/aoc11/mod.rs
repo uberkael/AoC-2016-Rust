@@ -1,5 +1,8 @@
 use std::collections::{HashSet, VecDeque};
 
+#[cfg(test)]
+mod tests;
+
 pub fn aoc11() {
 	println!("\nDay 11: Radioisotope Thermoelectric Generators");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -15,20 +18,17 @@ struct State {
 }
 
 impl State {
-	fn canonicalize(&mut self) {
+	fn sort(&mut self) {
 		self.pairs.sort();
 	}
-
 	fn is_valid(&self) -> bool {
 		self.pairs.iter().all(|&(chip, gen)| {
 			chip == gen || !self.pairs.iter().any(|&(_, other_gen)| other_gen == chip)
 		})
 	}
-
 	fn is_finished(&self, top: u8) -> bool {
 		self.pairs.iter().all(|&(c, g)| c == top && g == top)
 	}
-
 	fn items_on_elevator(&self) -> Vec<(usize, bool)> {
 		let mut items = Vec::new();
 		for (i, &(chip, gen)) in self.pairs.iter().enumerate() {
@@ -41,14 +41,26 @@ impl State {
 		}
 		items
 	}
-
 	fn new(pairs: Vec<(u8, u8)>) -> Self {
 		let mut init = State {
 			elevator: 1,
 			pairs: pairs,
 		};
-		init.canonicalize();
+		init.sort();
 		init
+	}
+	fn gen(&self, combo: &Vec<(usize, bool)>, dest: u8) -> State {
+		let mut new_state = self.clone();
+		new_state.elevator = dest;
+		combo.iter().for_each(|&(idx, is_chip)| {
+			if is_chip {
+				new_state.pairs[idx].0 = dest;
+			} else {
+				new_state.pairs[idx].1 = dest;
+			}
+		});
+		new_state.sort();
+		new_state
 	}
 }
 
@@ -72,28 +84,11 @@ fn bfs(init: State, top: u8) -> usize {
 		// Obtiene los ítems que se pueden mover (microchips o generadores en el piso actual).
 		let items = state.items_on_elevator();
 		// Genera todas las combinaciones posibles de 1 o 2 ítems.
-		let mut combos = Vec::new();
-		for i in 0..items.len() {
-			combos.push(vec![items[i]]);
-		}
-		for i in 0..items.len() {
-			for j in (i + 1)..items.len() {
-				combos.push(vec![items[i], items[j]]);
-			}
-		}
+		let combos = combinations(items);
 		// Para cada dirección y cada combinación, genera el nuevo estado.
 		for dest in directions {
 			combos.iter().for_each(|combo| {
-				let mut new_state = state.clone();
-				new_state.elevator = dest;
-				combo.iter().for_each(|&(idx, is_chip)| {
-					if is_chip {
-						new_state.pairs[idx].0 = dest;
-					} else {
-						new_state.pairs[idx].1 = dest;
-					}
-				});
-				new_state.canonicalize();
+				let new_state = state.gen(combo, dest);
 				if new_state.is_valid() && !visited.contains(&new_state) {
 					visited.insert(new_state.clone());
 					queue.push_back((new_state, steps + 1));
@@ -102,6 +97,19 @@ fn bfs(init: State, top: u8) -> usize {
 		}
 	}
 	unreachable!();
+}
+
+fn combinations(items: Vec<(usize, bool)>) -> Vec<Vec<(usize, bool)>> {
+	let mut combos = Vec::new();
+	for i in 0..items.len() {
+		combos.push(vec![items[i]]);
+	}
+	for i in 0..items.len() {
+		for j in (i + 1)..items.len() {
+			combos.push(vec![items[i], items[j]]);
+		}
+	}
+	combos
 }
 
 pub fn part1() -> usize {
