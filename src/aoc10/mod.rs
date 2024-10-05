@@ -10,10 +10,10 @@ pub fn aoc10() {
 	let input = std::fs::read_to_string("input/10/input.txt").unwrap();
 
 	/* Part 1 */
-	println!("{}", part1(&input));
+	println!("Part 1:\n{}", part1(&input));
 
 	/* Part 2 */
-	println!("{}", part2(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 /* Part 1 */
