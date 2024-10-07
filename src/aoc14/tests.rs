@@ -16,7 +16,7 @@ fn test_triple() {
 	let hashes = generate_hashes::<20>("abc");
 	assert_eq!(hashes[18], "0034e0923cc38887a57bd7b1d4f953df");
 	if let Some(c) = check_triple(&hashes[18]) {
-		assert_eq!(c, '8');
+		assert_eq!(c, 56);
 	} else {
 		assert!(false);
 	}
@@ -27,13 +27,9 @@ fn test_quintuple() {
 	let hashes = generate_hashes::<900>("abc");
 	assert_eq!(hashes[39], "347dac6ee8eeea4652c7476d0f97bee5");
 	assert_eq!(hashes[816], "3aeeeee1367614f3061d165a5fe3cac3");
-	assert_eq!(check_quintuple(&hashes[816], 'e'), true);
-}
-
-#[test]
-fn test_validate() {
-	let hashes = generate_hashes::<1000>("abc");
-	assert_eq!(validate(&hashes, 'e'), true);
+	println!("{:?}", 101 as char);
+	assert_eq!(check_quintuples(&hashes[816]), [101]);
+	assert_eq!(check_quintuples(&hashes[816])[0] as char == 'e', true);
 }
 
 #[test]
