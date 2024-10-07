@@ -11,6 +11,7 @@ mod aoc10;
 mod aoc11;
 mod aoc12;
 mod aoc13;
+mod aoc14;
 
 fn main() {
 	aoc01::aoc01();
@@ -26,4 +27,5 @@ fn main() {
 	aoc11::aoc11();
 	aoc12::aoc12();
 	aoc13::aoc13();
+	aoc14::aoc14();
 }
