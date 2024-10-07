@@ -12,6 +12,7 @@ pub fn aoc13() {
 	let input = std::fs::read_to_string("input/13/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -99,6 +100,36 @@ impl Maze {
 		}
 		usize::MAX
 	}
+	fn solve_till_n(&self, n: usize) -> usize {
+		let mut queue = VecDeque::new();
+		let mut visited = vec![vec![false; self.grid[0].len()]; self.grid.len()];
+
+		queue.push_back((self.pos.0, self.pos.1, 0));
+		visited[self.pos.1][self.pos.0] = true;
+
+		while let Some((x, y, steps)) = queue.pop_front() {
+			if steps == n {
+				return visited.iter().flatten().filter(|&&v| v).count();
+			}
+
+			let directions = [(0, 1), (1, 0), (0, -1), (-1, 0)];
+			for (dx, dy) in directions.iter() {
+				let nx = x as isize + dx;
+				let ny = y as isize + dy;
+
+				if nx >= 0
+					&& ny >= 0 && (ny as usize) < self.grid.len()
+					&& (nx as usize) < self.grid[0].len()
+					&& !visited[ny as usize][nx as usize]
+					&& self.grid[ny as usize][nx as usize] == Cell::Open
+				{
+					visited[ny as usize][nx as usize] = true;
+					queue.push_back((nx as usize, ny as usize, steps + 1));
+				}
+			}
+		}
+		usize::MAX
+	}
 }
 
 /* Part1 */
@@ -107,4 +138,11 @@ fn part1(input: &str) -> usize {
 	let maze = Maze::new(favorite, 50, 50);
 	// maze.print();
 	maze.solve(31, 39)
+}
+
+/* Part2 */
+fn part2(input: &str) -> usize {
+	let favorite = input.trim().parse().unwrap();
+	let maze = Maze::new(favorite, 50, 50);
+	maze.solve_till_n(50)
 }
