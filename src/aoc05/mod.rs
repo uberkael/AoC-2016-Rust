@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 #[cfg(test)]
 mod tests;
 
@@ -15,7 +17,7 @@ pub fn aoc05() {
 }
 
 fn part1(calc: bool) -> String {
-	if !calc {
+	if !calc { // TODO: Avoid expensive calculations
 		return "4543c154".to_string();
 	}
 	let data = generate_number("ojvtpuvg")
@@ -64,7 +66,7 @@ fn check_finished(password: &[char; 8]) -> bool {
 }
 
 fn part2(calc: bool) -> String {
-	if !calc {
+	if !calc { // TODO: Avoid expensive calculations
 		return "1050cbbd".to_string();
 	}
 	let mut password = ['_'; 8];

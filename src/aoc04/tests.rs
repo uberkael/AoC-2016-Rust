@@ -54,17 +54,17 @@ fn test1_4() {
 
 #[test]
 fn test2_cypher() {
-	assert_eq!(cypher('a', 1), 'b');
-	assert_eq!(cypher('z', 1), 'a');
-	assert_eq!(cypher('a', 26), 'a');
-	assert_eq!(cypher('a', 27), 'b');
-	assert_eq!(cypher('-', 1), ' ');
+	assert_eq!(cipher('a', 1), 'b');
+	assert_eq!(cipher('z', 1), 'a');
+	assert_eq!(cipher('a', 26), 'a');
+	assert_eq!(cipher('a', 27), 'b');
+	assert_eq!(cipher('-', 1), ' ');
 }
 
 #[test]
 fn test2_cypher2() {
 	let input = "qzmt-zixmtkozy-ivhz";
-	let name = input.chars().map(|c| cypher(c, 343)).collect::<String>();
+	let name = input.chars().map(|c| cipher(c, 343)).collect::<String>();
 	assert_eq!(name, "very encrypted name");
 }
 

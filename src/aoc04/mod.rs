@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 #[cfg(test)]
 mod tests;
 
@@ -31,7 +33,7 @@ struct Room {
 impl Room {
 	fn new(s: &str) -> Room {
 		let mut parts: Vec<&str> = s.split('-').collect();
-		let mut last_part: Vec<&str> = parts
+		let mut last_part: Vec<&str> = parts // TODO: Simplificar
 			.pop()
 			.unwrap_or_default()
 			.split('[')
@@ -67,13 +69,12 @@ impl Room {
 	}
 
 	/* Part 2 */
-
 	fn decrypt(&self) -> String {
-		self.name.chars().map(|c| cypher(c, self.sector)).collect()
+		self.name.chars().map(|c| cipher(c, self.sector)).collect()
 	}
 }
 
-fn cypher(c: char, n: usize) -> char {
+fn cipher(c: char, n: usize) -> char { // TODO: Simplificar
 	if c == '-' {
 		return ' ';
 	}
@@ -92,8 +93,8 @@ fn parte2(input: &str) -> usize {
 	let reals = rooms.iter().filter(|r| r.is_real());
 	for room in reals {
 		let decrypted = room.decrypt();
-		// println!("{}", decrypted);
 		if decrypted.contains("north") {
+			println!("{}", decrypted);
 			return room.sector;
 		}
 	}

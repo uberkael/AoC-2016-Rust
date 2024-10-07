@@ -26,16 +26,16 @@ fn test_parse_triangle() {
 #[test]
 fn test_check_triangle() {
 	let t : Triangle = [5, 10, 25];
-	assert_eq!(check_triangle(t), false);
+	assert_eq!(check_triangle(&t), false);
 
 	let t : Triangle = [810, 679, 10];
-	assert_eq!(check_triangle(t), false);
+	assert_eq!(check_triangle(&t), false);
 
 	let t : Triangle = [783, 255, 616];
-	assert_eq!(check_triangle(t), true);
+	assert_eq!(check_triangle(&t), true);
 
 	let t : Triangle = [545, 626, 626];
-	assert_eq!(check_triangle(t), true);
+	assert_eq!(check_triangle(&t), true);
 }
 
 /* Test 2 */

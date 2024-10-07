@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 #[cfg(test)]
 mod tests;
 
@@ -9,12 +11,12 @@ pub fn aoc03() {
 
 	/* Part 1 */
 	let triangles = parse_input(&input);
-	let possible = triangles.iter().filter(|t| check_triangle(**t)).count();
+	let possible = triangles.iter().filter(|t| check_triangle(*t)).count();
 	println!("Part 1:\n{possible}");
 
 	/* Part 2 */
 	let triangles = parse_input2(&input);
-	let possible = triangles.iter().filter(|t| check_triangle(**t)).count();
+	let possible = triangles.iter().filter(|t| check_triangle(*t)).count();
 	println!("Part 2:\n{possible}");
 
 }
@@ -30,7 +32,7 @@ fn parse_triangle(s: &str) -> Triangle {
 	[sides.next().unwrap(), sides.next().unwrap(), sides.next().unwrap()]
 }
 
-fn check_triangle(t: Triangle) -> bool {
+fn check_triangle(t: &Triangle) -> bool {
 	let max = *t.iter().max().unwrap();
 	let sum: usize = t.iter().sum();
 	sum - max > max
