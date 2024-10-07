@@ -1,6 +1,7 @@
 // #![allow(dead_code)]
 
 use std::collections::HashMap;
+use rayon::prelude::*;
 
 #[cfg(test)]
 mod tests;
@@ -22,7 +23,8 @@ fn find_keys(hashes: &[String], n: usize) -> Vec<usize> {
 		if let Some(c) = check_triple(hash) {
 			let min = i + 1;
 			let max = i + 1001;
-			if quintuples.get(&c)
+			if quintuples
+				.get(&c)
 				.map_or(false, |qs| qs.iter().any(|&q| q >= min && q < max))
 			{
 				keys.push(i);
@@ -85,14 +87,27 @@ fn check_quintuples(hash: &str) -> Vec<u8> {
 	result
 }
 
-fn key_stretching<const N: usize>(input: &str) -> [String; N] {
-std::array::from_fn(|i| {
-	let mut seed = format!("{}{}", input, i);
-	for _ in 0..2017 {
-		seed = format!("{:x}", md5::compute(seed));
+fn to_hex_bytes(digest: &md5::Digest, buffer: &mut [u8; 32]) {
+	const HEX_CHARS: &[u8] = b"0123456789abcdef";
+	for (i, &byte) in digest.iter().enumerate() {
+		buffer[i * 2] = HEX_CHARS[(byte >> 4) as usize];
+		buffer[i * 2 + 1] = HEX_CHARS[(byte & 0xf) as usize];
 	}
-	seed
-	})
+}
+
+fn key_stretching<const N: usize>(input: &str) -> [String; N] {
+	let mut result: [String; N] = std::array::from_fn(|_| String::new());
+	result.par_iter_mut().enumerate().for_each(|(i, s)| {
+		let mut seed = format!("{}{}", input, i);
+		let mut hex_buffer = [0u8; 32];
+		for _ in 0..2017 {
+			let digest = md5::compute(seed.as_bytes());
+			to_hex_bytes(&digest, &mut hex_buffer);
+			seed = unsafe { String::from_utf8_unchecked(hex_buffer.to_vec()) };
+		}
+		*s = seed;
+	});
+	result
 }
 
 /* Part1 */
