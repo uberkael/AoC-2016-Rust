@@ -1,3 +1,5 @@
+// #![allow(dead_code)]
+
 use std::collections::HashMap;
 
 #[cfg(test)]
@@ -10,6 +12,7 @@ pub fn aoc14() {
 	let input = std::fs::read_to_string("input/14/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 fn find_keys(hashes: &[String], n: usize) -> Vec<usize> {
@@ -82,11 +85,28 @@ fn check_quintuples(hash: &str) -> Vec<u8> {
 	result
 }
 
+fn key_stretching<const N: usize>(input: &str) -> [String; N] {
+std::array::from_fn(|i| {
+	let mut seed = format!("{}{}", input, i);
+	for _ in 0..2017 {
+		seed = format!("{:x}", md5::compute(seed));
+	}
+	seed
+	})
+}
+
 /* Part1 */
 fn part1(input: &str) -> usize {
 	let input = input.trim();
 	let hashes = generate_hashes::<30000>(input);
 	let results = find_keys(&hashes, 64);
-	// println!("{:?}", results.len());
+	results[63]
+}
+
+/* Part2 */
+fn part2(input: &str) -> usize {
+	let input = input.trim();
+	let hashes = key_stretching::<30000>(input);
+	let results = find_keys(&hashes, 64);
 	results[63]
 }

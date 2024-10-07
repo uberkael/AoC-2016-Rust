@@ -52,3 +52,10 @@ fn test_find_keys() {
 	assert_eq!(keys[6], 461);
 	assert_eq!(keys[7], 771);
 }
+
+#[test]
+fn test_key_stretching() {
+	let hashes = key_stretching::<1>("abc");
+	assert_eq!(hashes.len(), 1);
+	assert_eq!(hashes[0], "a107ff634856bb300138cac6568c0f24");
+}
