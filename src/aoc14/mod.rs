@@ -18,7 +18,7 @@ fn find_keys(hashes: &[String], n: usize) -> Vec<usize> {
 	let mut keys = Vec::new();
 	let mut i = 0;
 	while keys.len() < n && i < hashes.len() {
-		if let Some(c) = check_tiple(&hashes[i]) {
+		if let Some(c) = check_triple(&hashes[i]) {
 			let max = std::cmp::min(i + 1001, hashes.len());
 			if validate(&hashes[i + 1..max], c) {
 				// println!("{} - {}", i, hashes[i]);
@@ -30,27 +30,24 @@ fn find_keys(hashes: &[String], n: usize) -> Vec<usize> {
 	keys
 }
 
-fn validate(hashes: &[String], c: char) -> bool {
+fn validate(hashes: &[String], c: u8) -> bool {
 	hashes.iter().any(|hash| check_quintuple(hash, c))
 }
 
-fn check_tiple(hash: &str) -> Option<char> {
-	// println!("{}", hash);
-	for c in hash.chars().collect::<Vec<char>>().windows(3) {
-		// println!("{:?}", c);
-		if c[0] == c[1] && c[1] == c[2] {
-		return Some(c[0]);
-		}
-	}
-	None
+fn check_triple(hash: &str) -> Option<u8> {
+	let bytes = hash.as_bytes();
+	bytes
+		.windows(3)
+		.find(|w| w[0] == w[1] && w[1] == w[2])
+		.map(|w| w[0])
 }
 
-fn check_quintuple(hash: &str, c: char) -> bool {
-	hash.contains(&format!("{}{}{}{}{}", c, c, c, c, c))
+fn check_quintuple(hash: &str, c: u8) -> bool {
+	let target = [c; 5];
+	hash.as_bytes().windows(5).any(|w| w == target)
 }
 
-fn generate_hashes<const N: usize>(input: &str)
--> [String; N] {
+fn generate_hashes<const N: usize>(input: &str) -> [String; N] {
 	std::array::from_fn(|i| {
 		let seed = format!("{}{}", input, i);
 		format!("{:x}", md5::compute(seed))

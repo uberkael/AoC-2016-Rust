@@ -15,7 +15,7 @@ fn test_generate_hashes() {
 fn test_triple() {
 	let hashes = generate_hashes::<20>("abc");
 	assert_eq!(hashes[18], "0034e0923cc38887a57bd7b1d4f953df");
-	if let Some(c) = check_tiple(&hashes[18]) {
+	if let Some(c) = check_triple(&hashes[18]) {
 		assert_eq!(c, '8');
 	} else {
 		assert!(false);
