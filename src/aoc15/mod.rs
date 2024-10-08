@@ -1,8 +1,5 @@
 #![allow(dead_code)]
 
-// use std::collections::HashMap;
-// use rayon::prelude::*;
-
 use num::integer::lcm;
 
 #[cfg(test)]
@@ -15,6 +12,7 @@ pub fn aoc15() {
 	let input = std::fs::read_to_string("input/15/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 struct Disc {
@@ -45,6 +43,22 @@ fn parse_input(input: &str) -> Vec<Disc> {
 fn part1(input: &str) -> usize {
 	/* Chinese Remainder Theorem */
 	let discs = parse_input(input);
+	let mut time = 0;
+	let mut step = 1;
+	for (i, disc) in discs.iter().enumerate() {
+		let num_positions = disc.positions;
+		let remainder = (num_positions - ((disc.initial + i + 1) % num_positions)) % num_positions;
+		while time % num_positions != remainder {
+			time += step;
+		}
+		step = lcm(step, num_positions);
+	}
+	time
+}
+
+/* Part2 */
+fn part2(input: &str) -> usize {
+	let discs: Vec<Disc> = parse_input(&input).into_iter().chain(vec![Disc::new(11, 0)]).collect();
 	let mut time = 0;
 	let mut step = 1;
 	for (i, disc) in discs.iter().enumerate() {
