@@ -9,18 +9,19 @@ pub fn aoc16() {
 
 	let input = std::fs::read_to_string("input/16/input.txt").unwrap();
 
-	println!("Part 1:\n{:b}", part1(&input));
-
+	println!("Part 1:\n{}", part1(&input));
 }
 
-fn duplicate(a: usize, len_a: usize) -> (usize, usize) {
-	let inverted = invert_reverse(a, len_a);
-	let new_len = 2 * len_a + 1;
-	let new_data = (a << (len_a + 1)) | (0 << len_a) | inverted;
-	(new_data, new_len)
+type BitVec = Vec<u8>;
+
+fn duplicate(a: &BitVec) -> BitVec {
+	let mut new_data = a.clone();
+	new_data.push(0); // Añade el 0 central
+	// Añade los bits invertidos en orden inverso
+	new_data.extend(a.iter().rev().map(|&b| 1 - b));
+	new_data
 }
 
-// Invierte y revierte los bits considerando la longitud
 fn invert_reverse(data: usize, len: usize) -> usize {
 	let mut reversed = 0;
 	for i in 0..len {
@@ -30,51 +31,39 @@ fn invert_reverse(data: usize, len: usize) -> usize {
 	reversed
 }
 
-// Calcula el checksum usando la longitud real de los datos
-fn checksum(data: usize, len: usize) -> (usize, usize) {
-	let mut sum = 0;
-	let mut new_len = 0;
-	for i in (0..len).step_by(2) {
-		if i + 1 >= len {
-			break;
-		}
-		let bit1 = (data >> (len - 1 - i)) & 1;
-		let bit2 = (data >> (len - 1 - (i + 1))) & 1;
-		sum = (sum << 1) | if bit1 == bit2 { 1 } else { 0 };
-		new_len += 1;
-	}
-	(sum, new_len)
+fn checksum(data: &BitVec) -> BitVec {
+	data.chunks(2)
+		.map(|pair| if pair[0] == pair[1] { 1 } else { 0 })
+		.collect()
 }
 
-fn valid_checksum(mut data: usize, mut len: usize) -> usize {
-	while len % 2 == 0 {
-		let (new_data, new_len) = checksum(data, len);
-		data = new_data;
-		len = new_len;
+fn valid_checksum(mut data: BitVec) -> BitVec {
+	while data.len() % 2 == 0 {
+		data = checksum(&data);
 	}
 	data
 }
 
-fn process(initial_data: usize, initial_len: usize, size: usize) -> usize {
-	let mut data = initial_data;
-	let mut len = initial_len;
-	// Duplicar hasta alcanzar o superar la longitud deseada
-	while len < size {
-		let (new_data, new_len) = duplicate(data, len);
-		data = new_data;
-		len = new_len;
+fn process(initial_data: &str, size: usize) -> BitVec {
+	let mut data: BitVec = initial_data
+		.chars()
+		.map(|c| if c == '1' { 1 } else { 0 })
+		.collect();
+	while data.len() < size {
+		data = duplicate(&data);
 	}
-	// Recortar a la longitud deseada (bits más significativos)
-	let shift = len - size;
-	data >>= shift;
-	len = size;
-	// Calcular checksum válido
-	valid_checksum(data, len)
+	data.truncate(size); // trim size
+	valid_checksum(data)
 }
 
-fn part1(input: &str) -> usize {
-	let data = usize::from_str_radix(input.trim(), 2).unwrap();
-	let result = process(data, input.len(), 272);
-	// println!("Resultado: {:0width$b}", result, width = 20);
-	result
+fn stringify(data: &BitVec) -> String {
+	data.iter()
+		.map(|&b| if b == 1 { '1' } else { '0' })
+		.collect()
+}
+
+fn part1(input: &str) -> String {
+	let input = input.trim();
+	let result = process(input, 272);
+	stringify(&result)
 }

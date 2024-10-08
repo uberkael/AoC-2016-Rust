@@ -12,26 +12,26 @@ fn test_invert_reverse() {
 
 #[test]
 fn test_duplicate() {
-	assert_eq!(duplicate(0b1, 1), (0b100, 3));
-	assert_eq!(duplicate(0b0, 1), (0b001, 3));
-	assert_eq!(duplicate(0b11111, 5), (0b11111000000, 11));
-	assert_eq!(duplicate(0b111100001010, 12), (0b1111000010100101011110000, 25));
-	assert_eq!(duplicate(0b10000, 5), (0b10000011110, 11));
-	assert_eq!(duplicate(0b10000011110, 11), (0b10000011110010000111110, 23));
+	assert_eq!(duplicate(&vec![1]), vec![1, 0, 0]);
+	assert_eq!(duplicate(&vec![0]), vec![0, 0, 1]);
+	assert_eq!(duplicate(&vec![1, 1, 1, 1, 1]), vec![1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]);
+	assert_eq!(duplicate(&vec![1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0]), vec![1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0]);
+	assert_eq!(duplicate(&vec![1, 0, 0, 0, 0]), vec![1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0]);
+	assert_eq!(duplicate(&vec![1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0]), vec![1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0]);
 }
 
 #[test]
 fn test_checksum() {
-	assert_eq!(checksum(0b110010110100, 12), (0b110101, 6));
+	assert_eq!(checksum(&vec![1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0]), vec![1, 1, 0, 1, 0, 1]);
 }
 
 #[test]
 fn test_valid_checksum() {
-	assert_eq!(valid_checksum(0b110010110100, 12), 0b100);
-	assert_eq!(valid_checksum(0b10000011110010000111, 20), 0b01100);
+	assert_eq!(valid_checksum(vec![1,1,0,0,1,0,1,1,0,1,0,0]), vec![1, 0, 0]);
+	assert_eq!(valid_checksum(vec![1,0,0,0,0,0,1,1,1,1,0,0,1,0,0,0,0,1,1,1]), vec![0, 1, 1, 0, 0]);
 }
 
 #[test]
 fn test_process() {
-	assert_eq!(process(0b10000, 5, 20), 0b01100);
+	assert_eq!(process("10000", 20), vec![0, 1, 1, 0, 0]);
 }
