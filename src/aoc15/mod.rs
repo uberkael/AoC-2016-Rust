@@ -42,18 +42,11 @@ fn parse_input(input: &str) -> Vec<Disc> {
 /* Part1 */
 fn part1(input: &str) -> usize {
 	let discs = parse_input(input);
-	let mut align = 0;
 	let mut time = 0;
 	loop {
-		discs.iter().enumerate().for_each(|(i, d)| {
-			if d.position(time + i + 1) == 0 {
-				align += 1;
-			}
-		});
-		if align == discs.len() {
+		if discs.iter().enumerate().all(|(i, d)| d.position(time + i + 1) == 0) {
 			return time;
 		}
-		align = 0;
 		time += 1;
 	}
 }
