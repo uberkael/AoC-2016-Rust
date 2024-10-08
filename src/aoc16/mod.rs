@@ -10,6 +10,7 @@ pub fn aoc16() {
 	let input = std::fs::read_to_string("input/16/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 type BitVec = Vec<u8>;
@@ -56,5 +57,11 @@ fn stringify(data: &BitVec) -> String {
 fn part1(input: &str) -> String {
 	let input = input.trim();
 	let result = process(input, 272);
+	stringify(&result)
+}
+
+fn part2(input: &str) -> String {
+	let input = input.trim();
+	let result = process(input, 35651584);
 	stringify(&result)
 }
