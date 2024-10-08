@@ -1,4 +1,4 @@
-// #![allow(dead_code)]
+#![allow(dead_code)]
 
 use std::collections::HashMap;
 use rayon::prelude::*;
@@ -12,8 +12,8 @@ pub fn aoc14() {
 
 	let input = std::fs::read_to_string("input/14/input.txt").unwrap();
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	println!("Part 1:\n{}", part1(&input, false));
+	println!("Part 2:\n{}", part2(&input, false));
 }
 
 fn find_keys(hashes: &[String], n: usize) -> Vec<usize> {
@@ -111,7 +111,8 @@ fn key_stretching<const N: usize>(input: &str) -> [String; N] {
 }
 
 /* Part1 */
-fn part1(input: &str) -> usize {
+fn part1(input: &str, calc: bool) -> usize {
+	if !calc { return 16106; }
 	let input = input.trim();
 	let hashes = generate_hashes::<30000>(input);
 	let results = find_keys(&hashes, 64);
@@ -119,7 +120,8 @@ fn part1(input: &str) -> usize {
 }
 
 /* Part2 */
-fn part2(input: &str) -> usize {
+fn part2(input: &str, calc: bool) -> usize {
+	if !calc { return 22423; }
 	let input = input.trim();
 	let hashes = key_stretching::<30000>(input);
 	let results = find_keys(&hashes, 64);
