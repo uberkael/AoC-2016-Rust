@@ -1,16 +1,6 @@
 use super::*;
 
 #[test]
-fn test_invert_reverse() {
-	assert_eq!(invert_reverse(0b1, 1), 0b0);
-	assert_eq!(invert_reverse(0b0, 1), 0b1);
-	assert_eq!(invert_reverse(0b11111, 5), 0b00000);
-	assert_eq!(invert_reverse(0b111100001010, 12), 0b101011110000);
-	assert_eq!(invert_reverse(0b10000, 5), 0b11110);
-	assert_eq!(invert_reverse(0b10000011110, 11), 0b10000111110);
-}
-
-#[test]
 fn test_duplicate() {
 	assert_eq!(duplicate(&vec![1]), vec![1, 0, 0]);
 	assert_eq!(duplicate(&vec![0]), vec![0, 0, 1]);

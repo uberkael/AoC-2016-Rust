@@ -22,15 +22,6 @@ fn duplicate(a: &BitVec) -> BitVec {
 	new_data
 }
 
-fn invert_reverse(data: usize, len: usize) -> usize {
-	let mut reversed = 0;
-	for i in 0..len {
-		let bit = (data >> (len - 1 - i)) & 1; // Leer desde MSB
-		reversed |= (!bit & 1) << i; // Invertir y colocar en LSB
-	}
-	reversed
-}
-
 fn checksum(data: &BitVec) -> BitVec {
 	data.chunks(2)
 		.map(|pair| if pair[0] == pair[1] { 1 } else { 0 })
