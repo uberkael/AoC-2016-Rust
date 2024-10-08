@@ -1,4 +1,4 @@
-// #![allow(dead_code)]
+use rayon::prelude::*;
 
 #[cfg(test)]
 mod tests;
@@ -13,19 +13,24 @@ pub fn aoc16() {
 	println!("Part 2:\n{}", part2(&input));
 }
 
-type BitVec = Vec<u8>;
+type BitVec = Vec<bool>;
 
 fn duplicate(a: &BitVec) -> BitVec {
 	let mut new_data = a.clone();
-	new_data.push(0); // Añade el 0 central
-	// Añade los bits invertidos en orden inverso
-	new_data.extend(a.iter().rev().map(|&b| 1 - b));
+	new_data.push(false); // Añade el 0 central (false)
+	// Añade los bits invertidos en orden inverso de forma paralela
+	let inverted: Vec<bool> = a
+		.par_iter()
+		.rev()
+		.map(|&b| !b)
+		.collect();
+	new_data.extend(inverted);
 	new_data
 }
 
 fn checksum(data: &BitVec) -> BitVec {
-	data.chunks(2)
-		.map(|pair| if pair[0] == pair[1] { 1 } else { 0 })
+	data.par_chunks(2)
+		.map(|pair| pair[0] == pair[1])
 		.collect()
 }
 
@@ -38,19 +43,21 @@ fn valid_checksum(mut data: BitVec) -> BitVec {
 
 fn process(initial_data: &str, size: usize) -> BitVec {
 	let mut data: BitVec = initial_data
-		.chars()
-		.map(|c| if c == '1' { 1 } else { 0 })
+		.trim()
+		.as_bytes()
+		.par_iter()
+		.map(|&c| c == 0b1)
 		.collect();
 	while data.len() < size {
 		data = duplicate(&data);
 	}
-	data.truncate(size); // trim size
+	data.truncate(size);
 	valid_checksum(data)
 }
 
 fn stringify(data: &BitVec) -> String {
-	data.iter()
-		.map(|&b| if b == 1 { '1' } else { '0' })
+	data.par_iter()
+		.map(|&b| if b { '1' } else { '0' })
 		.collect()
 }
 
