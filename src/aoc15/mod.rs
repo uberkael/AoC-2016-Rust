@@ -3,6 +3,8 @@
 // use std::collections::HashMap;
 // use rayon::prelude::*;
 
+use num::integer::lcm;
+
 #[cfg(test)]
 mod tests;
 
@@ -30,23 +32,28 @@ impl Disc {
 }
 
 fn parse_input(input: &str) -> Vec<Disc> {
-	input .lines().map(|line| {
-			let parts: Vec<_> = line[0..line.len() - 1]
-				.split_whitespace()
-				.filter_map(|s| s.parse().ok())
-				.collect();
-			Disc::new(parts[0], parts[1])
+	input.lines().map(|line| {
+		let parts: Vec<_> = line[0..line.len() - 1]
+			.split_whitespace()
+			.filter_map(|s| s.parse().ok())
+			.collect();
+		Disc::new(parts[0], parts[1])
 		}).collect()
 }
 
 /* Part1 */
 fn part1(input: &str) -> usize {
+	/* Chinese Remainder Theorem */
 	let discs = parse_input(input);
 	let mut time = 0;
-	loop {
-		if discs.iter().enumerate().all(|(i, d)| d.position(time + i + 1) == 0) {
-			return time;
+	let mut step = 1;
+	for (i, disc) in discs.iter().enumerate() {
+		let num_positions = disc.positions;
+		let remainder = (num_positions - ((disc.initial + i + 1) % num_positions)) % num_positions;
+		while time % num_positions != remainder {
+			time += step;
 		}
-		time += 1;
+		step = lcm(step, num_positions);
 	}
+	time
 }
