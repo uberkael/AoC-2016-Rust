@@ -11,8 +11,10 @@ pub fn aoc20() {
 
 	let input = std::fs::read_to_string("input/20/input.txt").unwrap();
 
-	println!("Part 1:\n{}", part1(&input));
-	// println!("Part 2:\n{}", part2(&input));
+	let ips = ranges(input.trim().to_string());
+
+	println!("Part 1:\n{}", part1(&ips));
+	println!("Part 2:\n{}", part2(&ips));
 }
 
 fn ranges(input: String) -> Vec<bool> {
@@ -33,11 +35,30 @@ fn ranges(input: String) -> Vec<bool> {
 	ips
 }
 
-fn ip_min(ips: Vec<bool>) -> u32 {
+fn ip_min(ips: &Vec<bool>) -> u32 {
 	ips.iter().position(|&x| x).unwrap() as u32
 }
 
-fn part1(input: &String) -> u32 {
-	let ips = ranges(input.to_string());
-	ip_min(ips)
+fn part1(ips: &Vec<bool>) -> u32 {
+	ip_min(&ips)
+}
+
+fn allowed(ips: &Vec<bool>) -> u32 {
+	let mut count = 0;
+	let mut i = 0;
+	while i < ips.len() {
+		if ips[i] {
+			count += 1;
+			i += 1;
+		} else {
+			while i < ips.len() && !ips[i] {
+				i += 1;
+			}
+		}
+	}
+	count
+}
+
+fn part2(ips: &Vec<bool>) -> u32 {
+	allowed(&ips)
 }
