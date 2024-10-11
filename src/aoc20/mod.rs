@@ -1,7 +1,3 @@
-#![allow(dead_code)]
-
-use rayon::prelude::*;
-
 #[cfg(test)]
 mod tests;
 
@@ -11,42 +7,72 @@ pub fn aoc20() {
 
 	let input = std::fs::read_to_string("input/20/input.txt").unwrap();
 
-	let ips = ranges(input.trim().to_string());
-	println!("IP Generados");
-	println!("Part 1:\n{}", part1(&ips));
-	println!("Part 2:\n{}", part2(&ips));
+	let ranges = ranges(input.trim().to_string());
+	let merged_ranges = merge(ranges);
+
+	println!("Part 1:\n{}", part1(&merged_ranges));
+	println!("Part 2:\n{}", part2(&merged_ranges));
 }
 
-fn ranges(input: String) -> Vec<bool> {
-	let mut ips = vec![true; 4294967296];
-	for line in input.lines() {
-		let parts: Vec<&str> = line.split('-').collect();
-		let start = parts[0].parse::<u32>().unwrap();
-		let end = parts[1].parse::<u32>().unwrap();
-		// Divide el rango en chunks y procesa en paralelo
-		ips[start as usize..=end as usize]
-			.par_chunks_mut(1024) // Divide en chunks
-			.for_each(|chunk| {
-				for i in chunk.iter_mut() {
-					*i = false;
-				}
-			});
+fn ranges(input: String) -> Vec<(u32, u32)> {
+	input.lines()
+		.map(|line| {
+			let parts: Vec<&str> = line.split('-').collect();
+			let start = parts[0].parse::<u32>().unwrap();
+			let end = parts[1].parse::<u32>().unwrap();
+			(start, end)
+		}).collect()
+}
+
+fn merge(mut ranges: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+	let mut merged = Vec::new();
+	ranges.sort_by_key(|&(start, _)| start);
+	let mut current_range = ranges[0];
+	for &(start, end) in &ranges[1..] {
+		if start <= current_range.1 + 1 {
+			current_range.1 = current_range.1.max(end);
+		} else {
+			merged.push(current_range);
+			current_range = (start, end);
+		}
 	}
-	ips
+	merged.push(current_range);
+	merged
 }
 
-fn ip_min(ips: &Vec<bool>) -> u32 {
-	ips.iter().position(|&x| x).unwrap() as u32
+
+fn ip_min(ranges: &Vec<(u32, u32)>) -> u32 {
+	if ranges[0].0 > 0 {
+		return 0;
+	}
+	for i in 1..ranges.len() {
+		let (i_start, _) = ranges[i];
+		let (_, prev_end) = ranges[i - 1];
+		if i_start > prev_end + 1 {
+			return prev_end + 1;
+		}
+	}
+	ranges.last().unwrap().1 + 1
 }
 
-fn part1(ips: &Vec<bool>) -> u32 {
-	ip_min(&ips)
+
+fn part1(ranges: &Vec<(u32, u32)>) -> u32 {
+	ip_min(ranges)
 }
 
-fn allowed(ips: &Vec<bool>) -> u32 {
-	ips.par_iter().filter(|&&x| x).count() as u32
+fn suma(ranges: &Vec<(u32, u32)>) -> u32 {
+	let mut allowed_ips = 0;
+	let mut prev_end = 0;
+	for &(start, end) in ranges {
+		if start > prev_end {
+			allowed_ips += start - prev_end - 1;
+		}
+		prev_end = prev_end.max(end);
+	}
+	allowed_ips += u32::MAX - prev_end;
+	allowed_ips
 }
 
-fn part2(ips: &Vec<bool>) -> u32 {
-	allowed(&ips)
+fn part2(ranges: &Vec<(u32, u32)>) -> u32 {
+	suma(ranges)
 }
