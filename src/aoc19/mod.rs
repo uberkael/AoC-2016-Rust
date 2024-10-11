@@ -15,8 +15,16 @@ pub fn aoc19() {
 
 /* 2(n−2^(log_2(n)⌋)+1) */
 fn josephus(n: usize) -> usize {
-	let z = (n as f64).log2().floor();
-	2 * (n - 2usize.pow(z as u32)) + 1
+	if n == 1 { return 1; }
+	let mut m = 1;
+	while 2 * m <= n {
+		m *= 2; // 2^⌊log_2(n)⌋
+	}
+	if n == m {
+		m // n potencia de 2
+	} else {
+		2 * (n - m) + 1 // n entre m y 2m
+	}
 }
 
 fn part1(input: &str) -> usize {
@@ -28,13 +36,17 @@ fn part1(input: &str) -> usize {
  * n−3^⌊log_3(n)⌋ si n está entre 3^⌊log_3(n)⌋ y 2*3^⌊log_3(n)⌋
  * 2n−3^⌊log_3(n)⌋ si n está entre 2*3^⌊log_3(n)⌋ y 3*3^⌊log_3(n)⌋ */
 fn josephus_opposite(n: usize) -> usize {
-	let z = (n as f64).log(3.0).floor() as u32;
-	if n == 3usize.pow(z) {
-		3usize.pow(z)
-	} else if n <= 2 * 3usize.pow(z) {
-		n - 3usize.pow(z)
+	if n == 1 { return 1; }
+	let mut m = 1;
+	while 3 * m <= n {
+		m *= 3; // 3^⌊log_3(n)⌋
+	}
+	if n == m {
+		m // n potencia de 3
+	} else if n <= m + m {
+		n - m // n entre m y 2m
 	} else {
-		(2 * n) - 3usize.pow(z)
+		(2 * n) - (3 * m) // n entre 2m y 3m
 	}
 }
 
