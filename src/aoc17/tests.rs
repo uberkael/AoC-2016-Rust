@@ -46,3 +46,17 @@ fn test_bfs() {
 	let result = bfs(room);
 	assert_eq!(result, "DRURDRUDDLLDLUURRDULRLDUUDDDRR");
 }
+
+
+#[test]
+fn test_longest_path() {
+	let room = Room::new(b"ihgpwlah".to_vec(), (0, 0));
+	let result = longest_path(room);
+	assert_eq!(result, 370);
+	let room = Room::new(b"kglvqrro".to_vec(), (0, 0));
+	let result = longest_path(room);
+	assert_eq!(result, 492);
+	let room = Room::new(b"ulqzkmiv".to_vec(), (0, 0));
+	let result = longest_path(room);
+	assert_eq!(result, 830);
+}
