@@ -4,66 +4,31 @@
 mod tests;
 
 pub fn aoc19() {
-    println!("\nDay 19: An Elephant Named Joseph");
-    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	println!("\nDay 19: An Elephant Named Joseph");
+	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-		let input: usize = std::fs::read_to_string("input/19/input.txt").unwrap().trim().parse().unwrap();
+	let input = std::fs::read_to_string("input/19/input.txt").unwrap();
 
-		println!("Part 1:\n{}", part1(input));
-		println!("Part 1:\n{}", part1(5));
-		println!("Part 1:\n{}", part1(10));
+	println!("Part 1:\n{}", part1(&input));
 }
 
-#[derive(Debug, Clone, Copy)]
-struct Elf {
-	id: usize,
-	presents: usize,
-}
-
-fn generate_elves(count: usize) -> Vec<Elf> {
-	let mut elves = vec![];
-	for i in 0..count {
-		elves.push(Elf { id: i + 1, presents: 1 });
+/* 2(n−2^(log_2(n)⌋)+1) */
+fn josephus(input: usize) -> usize {
+	// Encontrar la mayor potencia de 2 menor o igual a input
+	let mut largest_power = 1;
+	while largest_power * 2 <= input {
+		largest_power *= 2;
 	}
-	elves
-}
-
-fn round(mut party: Vec<Elf>) -> Vec<Elf> {
-	if party.len() < 10 {
-		println!("{:?}", party);
-	}
-	if party.len() == 1 {
-		return party;
-	}
-	if party.len() == 2 {
-		party[0].presents += party[1].presents;
-		return vec![party[0]];
-	}
-	let mut new_party = vec![];
-	new_party.push(party[party.len() - 1]);
-	for i in 0..party.len() - 1 {
-		if party[i].presents == 0 {
-			continue;
-		}
-		party[i].presents += party[i + 1].presents;
-		party[i + 1].presents = 0;
-		new_party.push(party[i]);
-	}
-	new_party
-}
-
-fn play(party: Vec<Elf>) -> usize {
-	let mut party = party;
-	loop {
-		party = round(party);
-		if party.len() == 1 {
-			// println!("{:?}", party);
-			return party[0].id;
-		}
+	// Aplicar la fórmula del problema de Josephus
+	let l = input - largest_power;
+	if l == 0 {
+		largest_power
+	} else {
+		2 * l + 1
 	}
 }
 
-fn part1(input: usize) -> usize {
-	let party = generate_elves(input);
-	play(party)
+fn part1(input: &str) -> usize {
+	let input = input.trim().parse().unwrap();
+	josephus(input)
 }
