@@ -5,7 +5,7 @@ mod tests;
 
 pub fn aoc18() {
 	println!("\nDay 18: Like a Rogue");
-	println!("━━━━━━━━━━━━━━━━━━━━━━━━━");
+	println!("━━━━━━━━━━━━━━━━━━━━");
 
 	let input = std::fs::read_to_string("input/18/input.txt").unwrap();
 
