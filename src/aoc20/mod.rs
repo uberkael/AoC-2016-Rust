@@ -12,7 +12,7 @@ pub fn aoc20() {
 	let input = std::fs::read_to_string("input/20/input.txt").unwrap();
 
 	let ips = ranges(input.trim().to_string());
-
+	println!("IP Generados");
 	println!("Part 1:\n{}", part1(&ips));
 	println!("Part 2:\n{}", part2(&ips));
 }
@@ -44,19 +44,7 @@ fn part1(ips: &Vec<bool>) -> u32 {
 }
 
 fn allowed(ips: &Vec<bool>) -> u32 {
-	let mut count = 0;
-	let mut i = 0;
-	while i < ips.len() {
-		if ips[i] {
-			count += 1;
-			i += 1;
-		} else {
-			while i < ips.len() && !ips[i] {
-				i += 1;
-			}
-		}
-	}
-	count
+	ips.par_iter().filter(|&&x| x).count() as u32
 }
 
 fn part2(ips: &Vec<bool>) -> u32 {
