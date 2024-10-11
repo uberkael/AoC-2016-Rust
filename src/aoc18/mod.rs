@@ -10,7 +10,7 @@ pub fn aoc18() {
 	let input = std::fs::read_to_string("input/18/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
-	// println!("Part 2:\n{}", part2(&input));
+	println!("Part 2:\n{}", part2(&input));
 
 }
 
@@ -112,7 +112,12 @@ impl std::fmt::Display for Tile {
 }
 
 fn part1(input: &str) -> usize {
-	// let map = Map::new(10, ".^^.^.^^^^".to_string());
 	let map = Map::new(40, input.trim().to_string());
+	map.count_safe()
+}
+
+
+fn part2(input: &str) -> usize {
+	let map = Map::new(400000, input.trim().to_string());
 	map.count_safe()
 }
