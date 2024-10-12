@@ -10,6 +10,7 @@ pub fn aoc21() {
 	let input = std::fs::read_to_string("input/21/input.txt").unwrap();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 #[derive(Debug, PartialEq)]
@@ -62,7 +63,7 @@ impl Operation {
 			_ => None,
 		}
 	}
-	fn run(self, password: String) -> String {
+	fn scramble(self, password: String) -> String {
 		match self {
 			Operation::SwapPosition(x, y) => swap_position(password, x, y),
 			Operation::SwapLetter(x, y) => swap_letter(password, x, y),
@@ -71,6 +72,17 @@ impl Operation {
 			Operation::RotateOnLetter(x) => rotate_on_letter(password, x),
 			Operation::Reverse(x, y) => reverse(password, x, y),
 			Operation::Move(x, y) => p_move(password, x, y),
+		}
+	}
+	fn unscramble(self, password: String) -> String {
+		match self {
+			Operation::SwapPosition(x, y) => swap_position(password, x, y),
+			Operation::SwapLetter(x, y) => swap_letter(password, x, y),
+			Operation::RotateLeft(x) => rotate_right(password, x),
+			Operation::RotateRight(x) => rotate_left(password, x),
+			Operation::RotateOnLetter(x) => rotate_on_letter_inverse(password, x),
+			Operation::Reverse(x, y) => reverse(password, x, y),
+			Operation::Move(x, y) => p_move(password, y, x),
 		}
 	}
 }
@@ -104,10 +116,29 @@ fn rotate_right(password: String, x: usize) -> String {
 fn rotate_on_letter(password: String, x: char) -> String {
 	let mut chars: Vec<char> = password.chars().collect();
 	let pos = chars.iter().position(|&c| c == x).unwrap_or_default();
-	let n = 1 + pos + if pos >= 4 { 1 } else { 0 };
-	let shift = n % chars.len();
+	let shift = if pos >= 4 { 2 + pos } else { 1 + pos } % chars.len();
 	chars.rotate_right(shift);
 	chars.iter().collect::<String>()
+}
+
+fn rotate_on_letter_inverse(password: String, x: char) -> String {
+	let chars: Vec<char> = password.chars().collect();
+	let len = chars.len();
+	// Se rota a derecha e izquierda comparando con el original
+	for i in 0..len {
+		let mut candidate = chars.clone(); // password rotada izq i veces
+		candidate.rotate_left(i);
+		let pos = candidate.iter().position(|&c| c == x).unwrap();
+		let shift = (if pos >= 4 { pos + 2 } else { pos + 1 }) % len;
+		// Rotar a la derecha candidate para obtener candidate_forward
+		let mut candidate_forward = candidate.clone();
+		candidate_forward.rotate_right(shift);
+		// Comparar candidate_forward con el original
+		if candidate_forward == chars {
+			return candidate.into_iter().collect();
+		}
+	}
+	password
 }
 
 fn reverse(password: String, x: usize, y: usize) -> String {
@@ -127,7 +158,17 @@ fn part1(input: &str) -> String {
 	let mut password = "abcdefgh".to_string();
 	for line in input.lines() {
 		if let Some(op) = Operation::parse(line) {
-			password = op.run(password);
+			password = op.scramble(password);
+		}
+	}
+	password
+}
+
+fn part2(input: &str) -> String {
+	let mut password = "fbgdceah".to_string(); // CSpell: ignore fbgdceah
+	for line in input.lines().rev() {
+		if let Some(op) = Operation::parse(line) {
+			password = op.unscramble(password);
 		}
 	}
 	password
