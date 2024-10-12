@@ -77,45 +77,27 @@ fn run_operation(password: String, op: Operation) -> String {
 			chars.iter().collect::<String>()
 		}
 		Operation::RotateLeft(x) => {
-			let chars: Vec<char> = password.chars().collect();
-			let len = chars.len();
-			let mut new_chars = vec![' '; len];
-			for i in 0..len {
-				let new_pos = (i + x) % len;
-				new_chars[i] = chars[new_pos];
-			}
-			new_chars.iter().collect::<String>()
+			let mut chars: Vec<char> = password.chars().collect();
+			chars.rotate_left(x);
+			chars.iter().collect::<String>()
 		}
 		Operation::RotateRight(x) => {
-			let chars: Vec<char> = password.chars().collect();
-			let len = chars.len();
-			let mut new_chars = vec![' '; len];
-			for i in 0..len {
-				let new_pos = (i + len - x) % len;
-				new_chars[i] = chars[new_pos];
-			}
-			new_chars.iter().collect::<String>()
+			let mut chars: Vec<char> = password.chars().collect();
+			chars.rotate_right(x);
+			chars.iter().collect::<String>()
 		}
 		Operation::RotateOnLetter(x) => {
-			let chars: Vec<char> = password.chars().collect();
+			let mut chars: Vec<char> = password.chars().collect();
 			let pos = chars.iter().position(|&c| c == x).unwrap();
 			let n = 1 + pos + if pos >= 4 { 1 } else { 0 };
 			let shift = n % chars.len();
-			let len = chars.len();
-			let mut new_chars = vec![' '; len];
-			for i in 0..len {
-				let new_pos = (i + len - shift) % len;
-				new_chars[i] = chars[new_pos];
-			}
-			new_chars.iter().collect::<String>()
+			chars.rotate_right(shift);
+			chars.iter().collect::<String>()
 		}
 		Operation::Reverse(x, y) => {
-			let chars: Vec<char> = password.chars().collect();
-			let mut new_chars = chars.clone();
-			for i in x..=y {
-				new_chars[i] = chars[y - (i - x)];
-			}
-			new_chars.iter().collect::<String>()
+			let mut chars: Vec<char> = password.chars().collect();
+			chars[x..=y].reverse();
+			chars.iter().collect::<String>()
 		}
 		Operation::Move(x, y) => {
 			let mut chars: Vec<char> = password.chars().collect();
