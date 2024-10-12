@@ -16,10 +16,10 @@ pub fn aoc21() {
 #[derive(Debug, PartialEq)]
 enum Operation {
 	SwapPosition(usize, usize),
-	SwapLetter(char, char),
+	SwapLetter(u8, u8),
 	RotateLeft(usize),
 	RotateRight(usize),
-	RotateOnLetter(char),
+	RotateOnLetter(u8),
 	Reverse(usize, usize),
 	Move(usize, usize),
 }
@@ -34,8 +34,8 @@ impl Operation {
 				Some(Operation::SwapPosition(x, y))
 			}
 			("swap", "letter") => {
-				let x = parts[2].chars().next()?;
-				let y = parts[5].chars().next()?;
+				let x = parts[2].chars().next()? as u8;
+				let y = parts[5].chars().next()? as u8;
 				Some(Operation::SwapLetter(x, y))
 			}
 			("rotate", "left") => {
@@ -47,7 +47,7 @@ impl Operation {
 				Some(Operation::RotateRight(x))
 			}
 			("rotate", "based") => {
-				let x = parts[6].chars().next()?;
+				let x = parts[6].chars().next()? as u8;
 				Some(Operation::RotateOnLetter(x))
 			}
 			("reverse", _) => {
@@ -63,70 +63,60 @@ impl Operation {
 			_ => None,
 		}
 	}
-	fn scramble(self, password: String) -> String {
+	fn scramble(self, password: &mut Vec<u8>) {
 		match self {
 			Operation::SwapPosition(x, y) => swap_position(password, x, y),
-			Operation::SwapLetter(x, y) => swap_letter(password, x, y),
-			Operation::RotateLeft(x) => rotate_left(password, x),
-			Operation::RotateRight(x) => rotate_right(password, x),
-			Operation::RotateOnLetter(x) => rotate_on_letter(password, x),
-			Operation::Reverse(x, y) => reverse(password, x, y),
-			Operation::Move(x, y) => p_move(password, x, y),
+			Operation::SwapLetter(x, y)   => swap_letter(password, x, y),
+			Operation::RotateLeft(x)      => rotate_left(password, x),
+			Operation::RotateRight(x)     => rotate_right(password, x),
+			Operation::RotateOnLetter(x)  => rotate_on_letter(password, x),
+			Operation::Reverse(x, y)      => reverse(password, x, y),
+			Operation::Move(x, y)         => p_move(password, x, y),
 		}
 	}
-	fn unscramble(self, password: String) -> String {
+	fn unscramble(self, password: &mut Vec<u8>) {
 		match self {
 			Operation::SwapPosition(x, y) => swap_position(password, x, y),
-			Operation::SwapLetter(x, y) => swap_letter(password, x, y),
-			Operation::RotateLeft(x) => rotate_right(password, x),
-			Operation::RotateRight(x) => rotate_left(password, x),
-			Operation::RotateOnLetter(x) => rotate_on_letter_inverse(password, x),
-			Operation::Reverse(x, y) => reverse(password, x, y),
-			Operation::Move(x, y) => p_move(password, y, x),
+			Operation::SwapLetter(x, y)   => swap_letter(password, x, y),
+			Operation::RotateLeft(x)      => rotate_right(password, x),
+			Operation::RotateRight(x)     => rotate_left(password, x),
+			Operation::RotateOnLetter(x)  => rotate_on_letter_inverse(password, x),
+			Operation::Reverse(x, y)      => reverse(password, x, y),
+			Operation::Move(x, y)         => p_move(password, y, x),
 		}
 	}
 }
 
-fn swap_position(password: String, x: usize, y: usize) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	chars.swap(x, y);
-	chars.iter().collect::<String>()
+fn swap_position(password: &mut Vec<u8>, x: usize, y: usize) {
+	password.swap(x, y)
 }
 
-fn swap_letter(password: String, x: char, y: char) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	let x_pos = chars.iter().position(|&c| c == x).unwrap_or_default();
-	let y_pos = chars.iter().position(|&c| c == y).unwrap_or_default();
-	chars.swap(x_pos, y_pos);
-	chars.iter().collect::<String>()
+fn swap_letter(password: &mut Vec<u8>, x: u8, y: u8) {
+	let x_pos = password.iter().position(|&c| c == x).unwrap_or_default();
+	let y_pos = password.iter().position(|&c| c == y).unwrap_or_default();
+	password.swap(x_pos, y_pos);
 }
 
-fn rotate_left(password: String, x: usize) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	chars.rotate_left(x);
-	chars.iter().collect::<String>()
+fn rotate_left(password: &mut Vec<u8>, x: usize) {
+	password.rotate_left(x);
 }
 
-fn rotate_right(password: String, x: usize) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	chars.rotate_right(x);
-	chars.iter().collect::<String>()
+fn rotate_right(password: &mut Vec<u8>, x: usize) {
+	password.rotate_right(x);
 }
 
-fn rotate_on_letter(password: String, x: char) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	let pos = chars.iter().position(|&c| c == x).unwrap_or_default();
-	let shift = if pos >= 4 { 2 + pos } else { 1 + pos } % chars.len();
-	chars.rotate_right(shift);
-	chars.iter().collect::<String>()
+fn rotate_on_letter(password: &mut Vec<u8>, x: u8) {
+	let pos = password.iter().position(|&c| c == x).unwrap_or_default();
+	let shift = if pos >= 4 { 2 + pos } else { 1 + pos } % password.len();
+	password.rotate_right(shift);
 }
 
-fn rotate_on_letter_inverse(password: String, x: char) -> String {
-	let chars: Vec<char> = password.chars().collect();
-	let len = chars.len();
+fn rotate_on_letter_inverse(password: &mut Vec<u8>, x: u8) {
+	let len = password.len();
 	// Se rota a derecha e izquierda comparando con el original
 	for i in 0..len {
-		let mut candidate = chars.clone(); // password rotada izq i veces
+		// password rotada izq i veces
+		let mut candidate = password.clone();
 		candidate.rotate_left(i);
 		let pos = candidate.iter().position(|&c| c == x).unwrap();
 		let shift = (if pos >= 4 { pos + 2 } else { pos + 1 }) % len;
@@ -134,42 +124,38 @@ fn rotate_on_letter_inverse(password: String, x: char) -> String {
 		let mut candidate_forward = candidate.clone();
 		candidate_forward.rotate_right(shift);
 		// Comparar candidate_forward con el original
-		if candidate_forward == chars {
-			return candidate.into_iter().collect();
+		if candidate_forward == *password {
+			*password = candidate;
+			break;
 		}
 	}
-	password
 }
 
-fn reverse(password: String, x: usize, y: usize) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	chars[x..=y].reverse();
-	chars.iter().collect::<String>()
+fn reverse(password: &mut Vec<u8>, x: usize, y: usize) {
+	password[x..=y].reverse();
 }
 
-fn p_move(password: String, x: usize, y: usize) -> String {
-	let mut chars: Vec<char> = password.chars().collect();
-	let c = chars.remove(x);
-	chars.insert(y, c);
-	chars.iter().collect::<String>()
+fn p_move(password: &mut Vec<u8>, x: usize, y: usize) {
+	let c = password.remove(x);
+	password.insert(y, c);
 }
 
 fn part1(input: &str) -> String {
-	let mut password = "abcdefgh".to_string();
+	let mut password: Vec<u8> = "abcdefgh".as_bytes().to_vec();
 	for line in input.lines() {
 		if let Some(op) = Operation::parse(line) {
-			password = op.scramble(password);
+			op.scramble(&mut password);
 		}
 	}
-	password
+	String::from_utf8(password).unwrap()
 }
 
 fn part2(input: &str) -> String {
-	let mut password = "fbgdceah".to_string(); // CSpell: ignore fbgdceah
+	let mut password: Vec<u8> = "fbgdceah".as_bytes().to_vec(); // CSpell: ignore fbgdceah
 	for line in input.lines().rev() {
 		if let Some(op) = Operation::parse(line) {
-			password = op.unscramble(password);
+			op.unscramble(&mut password);
 		}
 	}
-	password
+	String::from_utf8(password).unwrap()
 }

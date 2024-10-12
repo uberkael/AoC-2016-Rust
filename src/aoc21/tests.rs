@@ -3,47 +3,47 @@ use super::*;
 
 #[test]
 fn test_run_operation() {
-	let pass = "abcde".to_string();
-	let pass = Operation::SwapPosition(4, 0).scramble(pass);
-	assert_eq!(pass, "ebcda");
-	let pass = Operation::SwapLetter('d', 'b').scramble(pass);
-	assert_eq!(pass, "edcba");
-	let pass = Operation::RotateLeft(1).scramble(pass);
-	assert_eq!(pass, "dcbae");
-	let pass = Operation::RotateRight(1).scramble(pass);
-	assert_eq!(pass, "edcba");
-	let pass = Operation::RotateRight(3).scramble(pass);
-	assert_eq!(pass, "cbaed");
-	let pass = Operation::RotateOnLetter('b').scramble(pass);
-	assert_eq!(pass, "edcba");
-	let pass = Operation::RotateOnLetter('d').scramble(pass);
-	assert_eq!(pass, "baedc");
-	let pass = Operation::Reverse(0, 4).scramble(pass);
-	assert_eq!(pass, "cdeab");
-	let pass = Operation::Reverse(1, 2).scramble(pass);
-	assert_eq!(pass, "cedab");
-	let pass = Operation::Move(1, 4).scramble(pass);
-	assert_eq!(pass, "cdabe");
-	let pass = Operation::Move(3, 0).scramble(pass);
-	assert_eq!(pass, "bcdae");
+	let mut pass = "abcde".as_bytes().to_vec();
+	Operation::SwapPosition(4, 0).scramble(&mut pass);
+	assert_eq!(pass, "ebcda".as_bytes().to_vec());
+	Operation::SwapLetter(b'd', b'b').scramble(&mut pass);
+	assert_eq!(pass, "edcba".as_bytes().to_vec());
+	Operation::RotateLeft(1).scramble(&mut pass);
+	assert_eq!(pass, "dcbae".as_bytes().to_vec());
+	Operation::RotateRight(1).scramble(&mut pass);
+	assert_eq!(pass, "edcba".as_bytes().to_vec());
+	Operation::RotateRight(3).scramble(&mut pass);
+	assert_eq!(pass, "cbaed".as_bytes().to_vec());
+	Operation::RotateOnLetter(b'b').scramble(&mut pass);
+	assert_eq!(pass, "edcba".as_bytes().to_vec());
+	Operation::RotateOnLetter(b'd').scramble(&mut pass);
+	assert_eq!(pass, "baedc".as_bytes().to_vec());
+	Operation::Reverse(0, 4).scramble(&mut pass);
+	assert_eq!(pass, "cdeab".as_bytes().to_vec());
+	Operation::Reverse(1, 2).scramble(&mut pass);
+	assert_eq!(pass, "cedab".as_bytes().to_vec());
+	Operation::Move(1, 4).scramble(&mut pass);
+	assert_eq!(pass, "cdabe".as_bytes().to_vec());
+	Operation::Move(3, 0).scramble(&mut pass);
+	assert_eq!(pass, "bcdae".as_bytes().to_vec());
 
-	let pass = "abcde".to_string();
-	let pass = Operation::SwapPosition(4, 0).scramble(pass);
-	assert_eq!(pass, "ebcda");
-	let pass = Operation::SwapLetter('d', 'b').scramble(pass);
-	assert_eq!(pass, "edcba");
-	let pass = Operation::Reverse(0, 4).scramble(pass);
-	assert_eq!(pass, "abcde");
-	let pass = Operation::RotateLeft(1).scramble(pass);
-	assert_eq!(pass, "bcdea");
-	let pass = Operation::Move(1, 4).scramble(pass);
-	assert_eq!(pass, "bdeac");
-	let pass = Operation::Move(3, 0).scramble(pass);
-	assert_eq!(pass, "abdec");
-	let pass = Operation::RotateOnLetter('b').scramble(pass);
-	assert_eq!(pass, "ecabd");
-	let pass = Operation::RotateOnLetter('d').scramble(pass);
-	assert_eq!(pass, "decab");
+	let mut pass = "abcde".as_bytes().to_vec();
+	Operation::SwapPosition(4, 0).scramble(&mut pass);
+	assert_eq!(pass, "ebcda".as_bytes().to_vec());
+	Operation::SwapLetter(b'd', b'b').scramble(&mut pass);
+	assert_eq!(pass, "edcba".as_bytes().to_vec());
+	Operation::Reverse(0, 4).scramble(&mut pass);
+	assert_eq!(pass, "abcde".as_bytes().to_vec());
+	Operation::RotateLeft(1).scramble(&mut pass);
+	assert_eq!(pass, "bcdea".as_bytes().to_vec());
+	Operation::Move(1, 4).scramble(&mut pass);
+	assert_eq!(pass, "bdeac".as_bytes().to_vec());
+	Operation::Move(3, 0).scramble(&mut pass);
+	assert_eq!(pass, "abdec".as_bytes().to_vec());
+	Operation::RotateOnLetter(b'b').scramble(&mut pass);
+	assert_eq!(pass, "ecabd".as_bytes().to_vec());
+	Operation::RotateOnLetter(b'd').scramble(&mut pass);
+	assert_eq!(pass, "decab".as_bytes().to_vec());
 }
 
 #[test]
@@ -51,7 +51,7 @@ fn test_parse() {
 	let op = Operation::parse("swap position 4 with position 0");
 	assert_eq!(op, Some(Operation::SwapPosition(4, 0)));
 	let op = Operation::parse("swap letter d with letter b ");
-	assert_eq!(op, Some(Operation::SwapLetter('d', 'b')));
+	assert_eq!(op, Some(Operation::SwapLetter(b'd', b'b')));
 	let op = Operation::parse("reverse positions 0 through 4");
 	assert_eq!(op, Some(Operation::Reverse(0, 4)));
 	let op = Operation::parse("rotate left 1 step");
@@ -61,14 +61,14 @@ fn test_parse() {
 	let op = Operation::parse("move position 3 to position 0");
 	assert_eq!(op, Some(Operation::Move(3, 0)));
 	let op = Operation::parse("rotate based on position of letter b");
-	assert_eq!(op, Some(Operation::RotateOnLetter('b')));
+	assert_eq!(op, Some(Operation::RotateOnLetter(b'b')));
 	let op = Operation::parse("rotate based on position of letter d");
-	assert_eq!(op, Some(Operation::RotateOnLetter('d')));
+	assert_eq!(op, Some(Operation::RotateOnLetter(b'd')));
 }
 
 #[test]
 fn test_run() {
-	let mut pass = "abcde".to_string();
+	let mut pass = "abcde".as_bytes().to_vec();
 	let results = ["ebcda","edcba","abcde","bcdea","bdeac","abdec","ecabd","decab"];
 	let instructions = "swap position 4 with position 0
 	swap letter d with letter b
@@ -79,17 +79,17 @@ fn test_run() {
 	rotate based on position of letter b
 	rotate based on position of letter d";
 	for (line, result) in instructions.lines().zip(results.iter()) {
-		println!("{}", pass);
+		// println!("{}", pass);
 		if let Some(op) = Operation::parse(line) {
-			pass = op.scramble(pass);
-			assert_eq!(pass, *result);
+			op.scramble(&mut pass);
+			assert_eq!(pass, result.as_bytes());
 		}
 	}
 }
 
 #[test]
 fn test_inverse_run() {
-	let mut pass = "decab".to_string();
+	let mut pass = "decab".as_bytes().to_vec();
 	let results = ["ecabd","abdec","bdeac","bcdea","abcde","edcba","ebcda","abcde"];
 	let instructions = "swap position 4 with position 0
 	swap letter d with letter b
@@ -100,10 +100,10 @@ fn test_inverse_run() {
 	rotate based on position of letter b
 	rotate based on position of letter d";
 	for (line, result) in instructions.lines().rev().zip(results.iter()) {
-		println!("{}", pass);
+		// println!("{}", pass);
 		if let Some(op) = Operation::parse(line) {
-			pass = op.unscramble(pass);
-			assert_eq!(pass, *result);
+			op.unscramble(&mut pass);
+			assert_eq!(pass, result.as_bytes());
 		}
 	}
 }
