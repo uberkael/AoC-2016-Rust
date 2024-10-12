@@ -1,3 +1,4 @@
+// cSpell:ignoreRegExp ".+?"
 use super::*;
 
 #[test]

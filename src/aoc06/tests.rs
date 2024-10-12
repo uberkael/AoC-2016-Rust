@@ -1,3 +1,4 @@
+// cSpell:ignoreRegExp \w+\\n\w+|"\w+"
 use super::*;
 
 #[test]

@@ -1,3 +1,4 @@
+// cSpell:ignoreRegExp U|D|R|L|
 use super::*;
 
 /* Methods only for testing */

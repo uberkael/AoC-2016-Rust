@@ -1,3 +1,4 @@
+// cSpell:ignore njnz
 use super::*;
 
 #[test]
