@@ -12,3 +12,10 @@ num = "0.4.3"
 # Habilitar símbolos de depuración para compilaciones de release
 [profile.release]
 debug = false
+# opt-level = 3
+# codegen-units = 1
+# lto = "fat"
+# panic = "abort"
+
+# [build]
+# rustflags = ["-C", "target-cpu=native"]

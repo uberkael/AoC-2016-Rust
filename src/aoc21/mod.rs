@@ -65,44 +65,37 @@ impl Operation {
 	}
 	fn scramble(self, password: &mut Vec<u8>) {
 		match self {
-			Operation::SwapPosition(x, y) => swap_position(password, x, y),
+			Operation::SwapPosition(x, y) => password.swap(x, y),
 			Operation::SwapLetter(x, y)   => swap_letter(password, x, y),
-			Operation::RotateLeft(x)      => rotate_left(password, x),
-			Operation::RotateRight(x)     => rotate_right(password, x),
+			Operation::RotateLeft(x)      => password.rotate_left(x),
+			Operation::RotateRight(x)     => password.rotate_right(x),
 			Operation::RotateOnLetter(x)  => rotate_on_letter(password, x),
-			Operation::Reverse(x, y)      => reverse(password, x, y),
+			Operation::Reverse(x, y)      => password[x..=y].reverse(),
 			Operation::Move(x, y)         => p_move(password, x, y),
 		}
 	}
 	fn unscramble(self, password: &mut Vec<u8>) {
 		match self {
-			Operation::SwapPosition(x, y) => swap_position(password, x, y),
+			Operation::SwapPosition(x, y) => password.swap(x, y),
 			Operation::SwapLetter(x, y)   => swap_letter(password, x, y),
-			Operation::RotateLeft(x)      => rotate_right(password, x),
-			Operation::RotateRight(x)     => rotate_left(password, x),
+			Operation::RotateLeft(x)      => password.rotate_right(x),
+			Operation::RotateRight(x)     => password.rotate_left(x),
 			Operation::RotateOnLetter(x)  => rotate_on_letter_inverse(password, x),
-			Operation::Reverse(x, y)      => reverse(password, x, y),
+			Operation::Reverse(x, y)      => password[x..=y].reverse(),
 			Operation::Move(x, y)         => p_move(password, y, x),
 		}
 	}
 }
 
-fn swap_position(password: &mut Vec<u8>, x: usize, y: usize) {
-	password.swap(x, y)
+fn p_move(password: &mut Vec<u8>, x: usize, y: usize) {
+	let c = password.remove(x);
+	password.insert(y, c);
 }
 
 fn swap_letter(password: &mut Vec<u8>, x: u8, y: u8) {
 	let x_pos = password.iter().position(|&c| c == x).unwrap_or_default();
 	let y_pos = password.iter().position(|&c| c == y).unwrap_or_default();
 	password.swap(x_pos, y_pos);
-}
-
-fn rotate_left(password: &mut Vec<u8>, x: usize) {
-	password.rotate_left(x);
-}
-
-fn rotate_right(password: &mut Vec<u8>, x: usize) {
-	password.rotate_right(x);
 }
 
 fn rotate_on_letter(password: &mut Vec<u8>, x: u8) {
@@ -129,15 +122,6 @@ fn rotate_on_letter_inverse(password: &mut Vec<u8>, x: u8) {
 			break;
 		}
 	}
-}
-
-fn reverse(password: &mut Vec<u8>, x: usize, y: usize) {
-	password[x..=y].reverse();
-}
-
-fn p_move(password: &mut Vec<u8>, x: usize, y: usize) {
-	let c = password.remove(x);
-	password.insert(y, c);
 }
 
 fn part1(input: &str) -> String {
