@@ -26,10 +26,12 @@ fn test_node_parse() {
 
 #[test]
 fn test_viable() {
-	let node1 = Node::new(0, 0, 92, 68, 22);
-	let node2 = Node::new(0, 1, 90, 20, 80);
-	assert_eq!(node1.viable(&node2), true);
-	let node1 = Node::new(0, 0, 92, 68, 24);
-	let node2 = Node::new(0, 1, 90, 90, 20);
-	assert_eq!(node1.viable(&node2), false);
+	let mut n = Nodes::new();
+	n.add(Node::new(0, 0, 92, 68, 22));
+	n.add(Node::new(0, 1, 90, 20, 80));
+	assert_eq!(n.viable_count(), 2);
+	let mut n = Nodes::new();
+	n.add(Node::new(0, 0, 92, 68, 24));
+	n.add(Node::new(0, 1, 90, 90, 20));
+	assert_eq!(n.viable_count(), 0);
 }
