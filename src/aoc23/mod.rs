@@ -13,6 +13,7 @@ pub fn aoc23() {
 
 	let instructions = reader(&input);
 	println!("Part 1:\n{}", part1(instructions.clone(), 7));
+	println!("Part 1:\n{}", part1(instructions.clone(), 12));
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -28,6 +29,9 @@ enum Instruction {
 	Dec(Arg),
 	Jnz(Arg, Arg),
 	Tgl(Arg),
+	Nop(),
+	Sum(Arg, Arg),
+	Ass(Arg, Arg, Arg),
 }
 
 trait ParseShortcut {
@@ -56,6 +60,9 @@ fn instruction(s: &str) -> Instruction {
 		"dec" => Instruction::Dec(parts[1].a()),
 		"jnz" => Instruction::Jnz(parts[1].a(), parts[2].a()),
 		"tgl" => Instruction::Tgl(parts[1].a()),
+		"nop" => Instruction::Nop(),
+		"sum" => Instruction::Sum(parts[1].a(), parts[2].a()),
+		"ass" => Instruction::Ass(parts[1].a(), parts[2].a(), parts[3].a()),
 		_ => panic!("Invalid instruction"),
 	}
 }
@@ -99,7 +106,34 @@ fn execute(inst: &Instruction, registers: &mut HashMap<char, isize>) -> isize {
 				1
 			}
 		}
-		Instruction::Tgl(_) => panic!("Tgl debe manejarse fuera de execute"), // No debería llegar aquí
+		Instruction::Tgl(_) => panic!("Tgl debe manejarse fuera de execute"),
+		Instruction::Nop() => 1,
+		// Sum a b: a += b, b = 0
+		Instruction::Sum(a, b) => {
+			let a_reg = if let Arg::Reg(r) = a { r } else { return 1; };
+			let b_reg = if let Arg::Reg(r) = b { r } else { return 1; };
+			let a_val = *registers.get(&a_reg).unwrap_or(&0);
+			let b_val = match b {
+				Arg::Reg(r) => *registers.get(&r).unwrap_or(&0),
+				Arg::Val(v) => *v,
+			};
+			registers.insert(*a_reg, a_val + b_val);
+			registers.insert(*b_reg, 0);
+			1
+		},
+		// a = a + (c * d); c = 0; d = 0
+		Instruction::Ass(a, b, c) => {
+			let a_reg = if let Arg::Reg(r) = a { r } else { return 1; };
+			let b_reg = if let Arg::Reg(r) = b { r } else { return 1; };
+			let c_reg = if let Arg::Reg(r) = c { r } else { return 1; };
+			let a_val = *registers.get(&a_reg).unwrap_or(&0);
+			let b_val = *registers.get(&b_reg).unwrap_or(&0);
+			let c_val = *registers.get(&c_reg).unwrap_or(&0);
+			registers.insert(*a_reg, a_val + (b_val * c_val));
+			registers.insert(*b_reg, 0);
+			registers.insert(*c_reg, 0);
+			1
+		}
 	}
 }
 
@@ -114,6 +148,9 @@ fn toggle(inst: &Instruction) -> Instruction {
 		Instruction::Tgl(arg)  => Instruction::Inc(*arg),
 		Instruction::Jnz(a, b) => Instruction::Cpy(*a, *b),
 		Instruction::Cpy(a, b) => Instruction::Jnz(*a, *b),
+		Instruction::Nop()     => Instruction::Nop(),
+		Instruction::Sum(a, b) => Instruction::Sum(*a, *b),
+		Instruction::Ass(a, b, c) => Instruction::Ass(*a, *b, *c),
 	}
 }
 
