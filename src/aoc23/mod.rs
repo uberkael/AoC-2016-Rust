@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 #[cfg(test)]
 mod tests;
 
@@ -9,13 +7,14 @@ pub fn aoc23() {
 
 	let input = std::fs::read_to_string("input/23/input.txt").unwrap();
 	let instructions = reader(&input);
-	println!("Part 1:\n{}", part1(instructions.clone(), 7));
-	println!("Part 2:\n{}", part1(instructions.clone(), 12));
+
+	println!("Part 1:\n{}", compute(instructions.clone(), 7));
+	println!("Part 2:\n{}", compute(instructions, 12));
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Arg {
-	Reg(char),
+	Reg(usize),
 	Val(isize),
 }
 
@@ -41,8 +40,20 @@ impl ParseShortcut for &str {
 		if let Ok(val) = self.parse() {
 			Arg::Val(val)
 		} else {
-			Arg::Reg(self.c())
+			// a -> 0, b -> 1, c -> 2, d -> 3 ...
+			Arg::Reg((self.c() as u8 - b'a') as usize)
 		}
+	}
+}
+
+fn reader(input: &str) -> Vec<Instruction> {
+	input.lines().map(|line| instruction(line)).collect()
+}
+
+fn get_value(arg: &Arg, registers: &[isize; 4]) -> isize {
+	match arg {
+		Arg::Val(v) => *v,
+		Arg::Reg(r) => registers[*r],
 	}
 }
 
@@ -58,44 +69,55 @@ fn instruction(s: &str) -> Instruction {
 	}
 }
 
-fn execute(inst: &Instruction, registers: &mut HashMap<char, isize>) -> isize {
+fn execute(ip: usize, inst: &Instruction, registers: &mut [isize; 4]) -> usize {
 	match inst {
 		Instruction::Cpy(src, dst) => {
 			if let Arg::Reg(dst_reg) = dst {
 				let value = get_value(src, registers);
-				registers.insert(*dst_reg, value);
+				registers[*dst_reg] = value;
 			}
-			1
+			ip + 1
 		}
 		Instruction::Inc(arg) => {
 			if let Arg::Reg(r) = arg {
-				*registers.entry(*r).or_insert(0) += 1;
+				registers[*r] += 1;
 			}
-			1
+			ip + 1
 		}
 		Instruction::Dec(arg) => {
 			if let Arg::Reg(r) = arg {
-				*registers.entry(*r).or_insert(0) -= 1;
+				registers[*r] -= 1;
 			}
-			1
+			ip + 1
 		}
 		Instruction::Jnz(cond, offset) => {
 			let value = get_value(cond, registers);
 			let jump = get_value(offset, registers);
 			if value != 0 {
-				jump
+				if ip as isize + jump < 0 {
+					0
+				} else {
+					(ip as isize + jump) as usize
+				}
 			} else {
-				1
+				ip + 1
 			}
 		}
 		Instruction::Tgl(_) => {
-			panic!("Tgl se maneja externamente");
+			panic!("Toggle not here");
 		}
 	}
 }
 
-fn reader(input: &str) -> Vec<Instruction> {
-	input.lines().map(|line| instruction(line)).collect()
+fn execute_toggle(ip: usize, registers: &[isize; 4], instructions: &mut Vec<Instruction>) -> usize {
+	if let Instruction::Tgl(arg) = &instructions[ip] {
+		let offset = get_value(arg, registers);
+		let target = (ip as isize + offset) as usize;
+		if target < instructions.len() {
+			instructions[target] = toggle(&instructions[target]);
+		}
+	}
+	ip + 1
 }
 
 fn toggle(inst: &Instruction) -> Instruction {
@@ -108,57 +130,22 @@ fn toggle(inst: &Instruction) -> Instruction {
 	}
 }
 
-fn get_value(arg: &Arg, registers: &HashMap<char, isize>) -> isize {
-	match arg {
-		Arg::Val(v) => *v,
-		Arg::Reg(r) => *registers.get(r).unwrap_or(&0),
-	}
-}
-
-fn execute_toggle(
-	ip: isize,
-	registers: &HashMap<char, isize>,
-	instructions: &mut Vec<Instruction>,
-) -> isize {
-	if let Instruction::Tgl(arg) = &instructions[ip as usize] {
-		let offset = get_value(arg, registers);
-		let target = ip + offset;
-		if target >= 0 && (target as usize) < instructions.len() {
-			instructions[target as usize] = toggle(&instructions[target as usize]);
-		}
-	}
-	1
-}
-
-/// inc X
-/// dec Y
-/// jnz Y -2
-/// X += Y; Y = 0;
 fn try_sum(
-	ip: isize,
-	instructions: &Vec<Instruction>,
-	registers: &mut HashMap<char, isize>,
-) -> Option<isize> {
-	if (ip + 2) as usize >= instructions.len() {
-		return None;
-	}
-	if let Instruction::Inc(Arg::Reg(target)) = instructions[ip as usize] {
-		if let Instruction::Dec(Arg::Reg(src)) = instructions[(ip + 1) as usize] {
-			if let Instruction::Jnz(Arg::Reg(check), Arg::Val(offset)) =
-				instructions[(ip + 2) as usize]
-			{
-				if check == src && offset == -2 {
-					// Realizamos la suma optimizada.
-					let val = *registers.get(&src).unwrap_or(&0);
-					*registers.entry(target).or_insert(0) += val;
-					registers.insert(src, 0);
-					return Some(3);
-				}
-			}
-		}
-	}
-	None
+    ip: usize,
+    instructions: &Vec<Instruction>,
+    registers: &mut [isize; 4],
+) -> Option<usize> {
+    if (ip + 2) >= instructions.len() { return None; }
+    let Instruction::Inc(Arg::Reg(target)) = instructions[ip] else { return None; };
+    let Instruction::Dec(Arg::Reg(src)) = instructions[ip + 1] else { return None; };
+    let Instruction::Jnz(Arg::Reg(check), Arg::Val(offset)) = instructions[ip + 2] else { return None; };
+    if check != src || offset != -2 { return None; }
+    let val = registers[src];
+    registers[target] += val;
+    registers[src] = 0;
+    Some(3)
 }
+
 
 /// cpy X Y
 /// inc A
@@ -168,52 +155,35 @@ fn try_sum(
 /// jnz B -5
 /// a += X * B; Y = 0; B = 0;
 fn try_multiplication(
-	ip: isize,
+	ip: usize,
 	instructions: &Vec<Instruction>,
-	registers: &mut HashMap<char, isize>,
-) -> Option<isize> {
-	if (ip + 5) as usize >= instructions.len() {
+	registers: &mut [isize; 4],
+) -> Option<usize> {
+	if (ip + 5) >= instructions.len() {
 		return None;
 	}
-	if let Instruction::Cpy(src, Arg::Reg(reg_y)) = instructions[ip as usize] {
-		if let Instruction::Inc(Arg::Reg(reg_a)) = instructions[(ip + 1) as usize] {
-			if let Instruction::Dec(Arg::Reg(reg_y2)) = instructions[(ip + 2) as usize] {
-				if reg_y != reg_y2 {
-					return None;
-				}
-				if let Instruction::Jnz(Arg::Reg(reg_y3), Arg::Val(off1)) =
-					instructions[(ip + 3) as usize]
-				{
-					if reg_y != reg_y3 || off1 != -2 {
-						return None;
-					}
-					if let Instruction::Dec(Arg::Reg(reg_b)) = instructions[(ip + 4) as usize] {
-						if let Instruction::Jnz(Arg::Reg(reg_b2), Arg::Val(off2)) =
-							instructions[(ip + 5) as usize]
-						{
-							if reg_b != reg_b2 || off2 != -5 {
-								return None;
-							}
-							let factor = get_value(&src, registers);
-							let veces = *registers.get(&reg_b).unwrap_or(&0);
-							*registers.entry(reg_a).or_insert(0) += factor * veces;
-							registers.insert(reg_y, 0);
-							registers.insert(reg_b, 0);
-							return Some(6);
-						}
-					}
-				}
-			}
-		}
-	}
-	None
+	let Instruction::Cpy(src, Arg::Reg(reg_y)) = instructions[ip] else { return None; };
+	let Instruction::Inc(Arg::Reg(reg_a)) = instructions[ip + 1] else { return None; };
+	let Instruction::Dec(Arg::Reg(reg_y2)) = instructions[ip + 2] else { return None; };
+	if reg_y != reg_y2 { return None; }
+	let Instruction::Jnz(Arg::Reg(reg_y3), Arg::Val(off1)) = instructions[ip + 3] else { return None; };
+	if reg_y != reg_y3 || off1 != -2 { return None; }
+	let Instruction::Dec(Arg::Reg(reg_b)) = instructions[ip + 4] else { return None; };
+	let Instruction::Jnz(Arg::Reg(reg_b2), Arg::Val(off2)) = instructions[ip + 5] else { return None; };
+	if reg_b != reg_b2 || off2 != -5 { return None; }
+	let factor = get_value(&src, registers);
+	let veces = registers[reg_b];
+	registers[reg_a] += factor * veces;
+	registers[reg_y] = 0;
+	registers[reg_b] = 0;
+	Some(6)
 }
 
-fn part1(mut instructions: Vec<Instruction>, eggs: isize) -> usize {
-	let mut registers: HashMap<char, isize> = HashMap::new();
-	registers.insert('a', eggs);
-	let mut ip: isize = 0;
-	while ip >= 0 && (ip as usize) < instructions.len() {
+fn compute(mut instructions: Vec<Instruction>, eggs: isize) -> usize {
+	let mut registers: [isize; 4] = [0; 4]; // Fixed array
+	registers[0] = eggs; // 'a' is 0
+	let mut ip = 0;
+	while ip < instructions.len() {
 		if let Some(jump) = try_multiplication(ip, &instructions, &mut registers) {
 			ip += jump;
 			continue;
@@ -223,10 +193,10 @@ fn part1(mut instructions: Vec<Instruction>, eggs: isize) -> usize {
 			continue;
 		}
 		if let Instruction::Tgl(Arg::Reg(_)) = instructions[ip as usize] {
-			ip += execute_toggle(ip, &registers, &mut instructions);
+			ip = execute_toggle(ip, &registers, &mut instructions);
 			continue;
 		}
-		ip += execute(&instructions[ip as usize], &mut registers);
+		ip = execute(ip, &instructions[ip], &mut registers);
 	}
-	*registers.get(&'a').unwrap_or(&0) as usize
+	registers[0] as usize
 }
