@@ -5,7 +5,7 @@ mod tests;
 
 pub fn aoc22() {
 	println!("\nDay 22: Grid Computing");
-	println!("━━━━━━━━━━━━━━━━━━━━━");
+	println!("━━━━━━━━━━━━━━━━━━━━━━");
 
 	let input = std::fs::read_to_string("input/22/input.txt").unwrap();
 
@@ -16,6 +16,7 @@ pub fn aoc22() {
 		}
 	}
 	println!("Part 1:\n{}", part1(&nodes));
+	println!("Part 2:\n{}", part2(&nodes));
 }
 
 #[derive(Debug, PartialEq)]
@@ -49,6 +50,12 @@ impl Node {
 		let used = parse_size(parts[2])?;
 		let avail = parse_size(parts[3])?;
 		Some(Node::new(x, y, size, used, avail))
+	}
+	fn to_goal(&self, wall: u8) -> u8 {
+		// println!("vertical: {}", self.y);
+		// println!("avoid wall: {}", (self.x - wall + 1));
+		// println!("from wall to goal: {}", (31 - wall + 1));
+		self.y + (self.x - wall + 1) + (31 - wall + 1)
 	}
 }
 
@@ -88,8 +95,51 @@ impl Nodes {
 		}
 		count
 	}
+	#[allow(unused)]
+	fn print(&self) {
+		let mut grid = vec![vec!['.'; 32]; 31];
+		grid[0][0] = 'S';
+		grid[0][31] = 'G';
+		for n in &self.nodes {
+			if 68u16.saturating_sub(n.avail) == 0 {
+				grid[n.y as usize][n.x as usize] = 'X'
+			}
+			if n.used > 100 {
+				grid[n.y as usize][n.x as usize] = '█'
+			}
+		}
+		for row in grid {
+			for c in row {
+				print!("{} ", c);
+			}
+			println!();
+		}
+	}
+	fn find_empty(&self) -> Option<&Node> { // node with used == 0
+		for n in &self.nodes {
+			if n.used == 0 {
+				return Some(n);
+			}
+		}
+		None
+	}
+	fn left_wall(&self) -> u8 { // min x of nodes n.used > 100
+		self.nodes.iter().filter(|n| n.used > 100).map(|n| n.x).min().unwrap_or(31)
+	}
+	fn goal_to_start(&self) -> u8 {
+		5 * 30 // Horizontal distance (5 movements * len - 1)
+	}
 }
 
 fn part1(nodes: &Nodes) -> usize {
 	nodes.viable_count()
+}
+
+fn part2(nodes: &Nodes) -> usize {
+	// nodes.print();
+	let n_empty = nodes.find_empty().unwrap();
+	// println!("Empty node: {:?}", n_empty);
+	let wall = nodes.left_wall();
+	// println!("Wall: {}", wall);
+	(nodes.goal_to_start() + n_empty.to_goal(wall)) as usize
 }
