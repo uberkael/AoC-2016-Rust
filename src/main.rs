@@ -20,6 +20,7 @@ mod aoc19;
 mod aoc20;
 mod aoc21;
 mod aoc22;
+mod aoc23;
 
 fn main() {
 	// aoc01::aoc01();
@@ -43,5 +44,6 @@ fn main() {
 	// aoc19::aoc19();
 	// aoc20::aoc20();
 	// aoc21::aoc21();
-	aoc22::aoc22();
+	// aoc22::aoc22();
+	aoc23::aoc23();
 }
