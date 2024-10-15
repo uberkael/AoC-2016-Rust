@@ -10,10 +10,12 @@ pub fn aoc23() {
 	println!("━━━━━━━━━━━━━━━━━━━━━");
 
 	let input = std::fs::read_to_string("input/23/input.txt").unwrap();
-
 	let instructions = reader(&input);
 	println!("Part 1:\n{}", part1(instructions.clone(), 7));
-	println!("Part 1:\n{}", part1(instructions.clone(), 12));
+
+	let input = std::fs::read_to_string("input/23/input.txt").unwrap();
+	let instructions = reader(&input);
+	println!("Part 2:\n{}", part1(instructions.clone(), 12));
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
