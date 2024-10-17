@@ -10,11 +10,12 @@ pub fn aoc24() {
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
 	let input = std::fs::read_to_string("input/24/input.txt")
-		.expect("Error reading the file");
+		.expect("Error reading the file")
 		.trim()
 		.to_string();
 
 	println!("Part 1:\n{}", part1(&input));
+	println!("Part 2:\n{}", part2(&input));
 }
 
 struct Duct {
@@ -121,4 +122,26 @@ fn part1(input: &str) -> usize {
 	let d = Duct::new(input);
 	let distances = d.distances();
 	find_shortest(&distances)
+}
+
+fn find_shortest_with_return(distances: &Vec<Vec<usize>>) -> usize {
+	let mut min_distance = usize::MAX;
+	let n = distances.len();
+	for perm in (1..n).permutations(n - 1) {
+		let mut distance = 0;
+		let mut prev = 0;
+		for &i in perm.iter() {
+			distance += distances[prev][i];
+			prev = i;
+		}
+		distance += distances[prev][0];
+		min_distance = min_distance.min(distance);
+	}
+	min_distance
+}
+
+fn part2(input: &str) -> usize {
+	let d = Duct::new(input);
+	let distances = d.distances();
+	find_shortest_with_return(&distances)
 }
