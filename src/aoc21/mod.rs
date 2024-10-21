@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc21() {
 	println!("\nDay 21: Scrambled Letters and Hash");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/21/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/21/input.txt")
+		.expect("Error reading the file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));
@@ -111,7 +110,7 @@ fn rotate_on_letter_inverse(password: &mut Vec<u8>, x: u8) {
 		// password rotada izq i veces
 		let mut candidate = password.clone();
 		candidate.rotate_left(i);
-		let pos = candidate.iter().position(|&c| c == x).unwrap();
+		let pos = candidate.iter().position(|&c| c == x).expect("Letter not found");
 		let shift = (if pos >= 4 { pos + 2 } else { pos + 1 }) % len;
 		// Rotar a la derecha candidate para obtener candidate_forward
 		let mut candidate_forward = candidate.clone();
@@ -131,7 +130,7 @@ fn part1(input: &str) -> String {
 			op.scramble(&mut password);
 		}
 	}
-	String::from_utf8(password).unwrap()
+	String::from_utf8(password).expect("Invalid UTF-8")
 }
 
 fn part2(input: &str) -> String {
@@ -141,5 +140,5 @@ fn part2(input: &str) -> String {
 			op.unscramble(&mut password);
 		}
 	}
-	String::from_utf8(password).unwrap()
+	String::from_utf8(password).expect("Invalid UTF-8")
 }

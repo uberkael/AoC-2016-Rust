@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -70,7 +68,7 @@ fn part2(calc: bool) -> String {
 		return "1050cbbd".to_string();
 	}
 	let mut password = ['_'; 8];
-	for d in generate_number("ojvtpuvg")
+	for d in generate_number("ojvtpuvg") // cSpell:words ojvtpuvg
 		.map(|s| format!("{:x}", md5::compute(s.as_bytes())))
 		.filter(|s| check_zeros(s))
 		.map(|s| get_data(&s))

@@ -1,7 +1,3 @@
-#![allow(dead_code)]
-
-use rayon::prelude::*;
-
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +5,8 @@ pub fn aoc16() {
 	println!("\nDay 16: Dragon Checksum");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/16/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/16/input.txt")
+		.expect("Error reading file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));

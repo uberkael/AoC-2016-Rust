@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::collections::HashMap;
 use rayon::prelude::*;
 
@@ -8,9 +6,10 @@ mod tests;
 
 pub fn aoc14() {
 	println!("\nDay 14: One-Time Pad");
-	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	println!("━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/14/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/14/input.txt")
+		.expect("Error reading the file");
 
 	println!("Part 1:\n{}", part1(&input, false));
 	println!("Part 2:\n{}", part2(&input, false));

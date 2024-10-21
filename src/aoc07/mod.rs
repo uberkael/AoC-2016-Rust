@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +7,8 @@ pub fn aoc07() {
 	println!("\nDay 7: Internet Protocol Version 7");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/07/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/07/input.txt")
+		.expect("Error reading file");
 
 	/* Parte 1 */
 	println!("Part 1:\n{}", part1(&input, false));
@@ -64,7 +63,6 @@ fn check_tls(s: &str) -> bool {
 }
 
 /* Part 2 */
-
 fn check_aba(s: &str) -> bool {
 	if s.len() != 3 { return false; }
 	s[0..1] == s[2..3] && s[0..1] != s[1..2]

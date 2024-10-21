@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc03() {
 	println!("\nDay 3: Squares With Three Sides");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/03/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/03/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	let triangles = parse_input(&input);
@@ -18,7 +17,6 @@ pub fn aoc03() {
 	let triangles = parse_input2(&input);
 	let possible = triangles.iter().filter(|t| check_triangle(*t)).count();
 	println!("Part 2:\n{possible}");
-
 }
 
 type Triangle = [usize; 3];
@@ -28,12 +26,17 @@ fn parse_input(input: &str) -> Vec<Triangle> {
 }
 
 fn parse_triangle(s: &str) -> Triangle {
-	let mut sides = s.split_whitespace().map(|x| x.parse::<usize>().unwrap());
-	[sides.next().unwrap(), sides.next().unwrap(), sides.next().unwrap()]
+	let mut sides = s.split_whitespace().map(|x| x.parse::<usize>()
+	.expect("Invalid number"));
+	[
+		sides.next().expect("No side 1"),
+		sides.next().expect("No side 2"),
+		sides.next().expect("No side 3"),
+	]
 }
 
 fn check_triangle(t: &Triangle) -> bool {
-	let max = *t.iter().max().unwrap();
+	let max = *t.iter().max().expect("No max value");
 	let sum: usize = t.iter().sum();
 	sum - max > max
 }
@@ -49,12 +52,11 @@ fn parse_input2(input: &str) -> Vec<Triangle> {
 }
 
 fn parse_lines(lines: &[&str]) -> Vec<Triangle> {
-	let mut sides : Vec<usize> = Vec::new();
+	let mut sides: Vec<usize> = Vec::new();
 	for line in lines {
-		let mut line_sides : Vec<usize> = line
+		let mut line_sides: Vec<usize> = line
 			.split_whitespace()
-			.map(|x| x.parse::<usize>()
-			.unwrap())
+			.map(|x| x.parse::<usize>().expect("Invalid number"))
 			.collect();
 		sides.append(&mut line_sides);
 	}

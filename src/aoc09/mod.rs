@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc09() {
 	println!("\nDay 9: Explosives in Cyberspace");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/09/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/09/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	println!("Part 1:\n{}", part1(&input, false));
@@ -71,9 +70,8 @@ fn parse_line(l: &str) -> String {
 }
 
 /* Part 2 */
-
 fn parse_line2(l: &str) -> String {
-	let re = regex::Regex::new(r"\(\d+x\d+\)").unwrap();
+	let re = regex::Regex::new(r"\(\d+x\d+\)").expect("Invalid regex");
 	let mut result = String::new();
 	let mut indicator = String::new();
 	let mut inside_indicator = false;

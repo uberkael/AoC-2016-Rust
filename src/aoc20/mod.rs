@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc20() {
 	println!("\nDay 20: Firewall Rules");
 	println!("━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/20/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/20/input.txt")
+		.expect("Error reading the file");
 
 	let ranges = ranges(input.trim().to_string());
 	let merged_ranges = merge(ranges);
@@ -20,8 +19,8 @@ fn ranges(input: String) -> Vec<(u32, u32)> {
 	input.lines()
 		.map(|line| {
 			let parts: Vec<&str> = line.split('-').collect();
-			let start = parts[0].parse::<u32>().unwrap();
-			let end = parts[1].parse::<u32>().unwrap();
+			let start = parts[0].parse::<u32>().expect("Error parsing input");
+			let end = parts[1].parse::<u32>().expect("Error parsing input");
 			(start, end)
 		}).collect()
 }
@@ -54,7 +53,7 @@ fn ip_min(ranges: &Vec<(u32, u32)>) -> u32 {
 			return prev_end + 1;
 		}
 	}
-	ranges.last().unwrap().1 + 1
+	ranges.last().expect("Empty ranges").1 + 1
 }
 
 

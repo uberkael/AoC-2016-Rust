@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc22() {
 	println!("\nDay 22: Grid Computing");
 	println!("━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/22/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/22/input.txt")
+		.expect("Error reading the file");
 
 	let mut nodes = Nodes::new();
 	for line in input.lines() {
@@ -137,7 +136,7 @@ fn part1(nodes: &Nodes) -> usize {
 
 fn part2(nodes: &Nodes) -> usize {
 	// nodes.print();
-	let n_empty = nodes.find_empty().unwrap();
+	let n_empty = nodes.find_empty().expect("Empty node not found");
 	// println!("Empty node: {:?}", n_empty);
 	let wall = nodes.left_wall();
 	// println!("Wall: {}", wall);

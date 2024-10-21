@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +7,8 @@ pub fn aoc04() {
 	println!("\nDay 4: Security Through Obscurity");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/04/input.txt").unwrap_or_default();
+	let input = std::fs::read_to_string("input/04/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	println!("Part 1:\n{}", parte1(&input));

@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use std::collections::VecDeque;
 
 #[cfg(test)]
@@ -9,7 +7,8 @@ pub fn aoc13() {
 	println!("\nDay 13: A Maze of Twisty Little Cubicles");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/13/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/13/input.txt")
+		.expect("Error reading the file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));

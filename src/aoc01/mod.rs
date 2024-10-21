@@ -1,23 +1,21 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
 pub fn aoc01() {
 	println!("\nDay 1: No Time for a Taxicab");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-	let input = std::fs::read_to_string("input/01/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/01/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new(&input);
-	mr_taxi.moves(instructions);
+	mr_taxi.moves(&instructions);
 	println!("Part 1:\n{}", mr_taxi.distance());
 
 	/* Part 2 */
 	let mut mr_taxi = MrTaxi::new();
-	let instructions = Instructions::new(&input);
-	mr_taxi.moves2(instructions);
+	mr_taxi.moves2(&instructions);
 	println!("Part 2:\n{}", mr_taxi.distance());
 
 }
@@ -41,8 +39,8 @@ struct Instruction {
 
 impl Instruction {
 	fn new(str: &str) -> Self {
-		let turn = str.chars().nth(0).unwrap();
-		let distance = str[1..].trim().parse().unwrap();
+		let turn = str.chars().nth(0).expect("Invalid turn");
+		let distance = str[1..].trim().parse().expect("Invalid distance");
 		Self { turn, distance }
 	}
 }

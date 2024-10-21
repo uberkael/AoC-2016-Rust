@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc18() {
 	println!("\nDay 18: Like a Rogue");
 	println!("━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/18/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/18/input.txt")
+		.expect("Error reading input file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));

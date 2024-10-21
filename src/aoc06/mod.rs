@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +7,8 @@ pub fn aoc06() {
 	println!("\nDay 6: Signals and Noise");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/06/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/06/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	println!("Part 1:\n{}", part1(&input));
@@ -41,7 +40,7 @@ fn generate_dictionaries(n: usize) -> Vec<Counter> {
 }
 
 fn max_char(counter: &Counter) -> char {
-	*counter.iter().max_by_key(|&(_, count)| count).unwrap().0
+	*counter.iter().max_by_key(|&(_, count)| count).expect("Empty counter").0
 }
 
 fn dict_max_char(dictionaries: Vec<Counter>) -> String {
@@ -54,7 +53,7 @@ fn dict_max_char(dictionaries: Vec<Counter>) -> String {
 /* Part 2 */
 
 fn min_char(counter: &Counter) -> char {
-	*counter.iter().min_by_key(|&(_, count)| count).unwrap().0
+	*counter.iter().min_by_key(|&(_, count)| count).expect("Empty counter").0
 }
 
 fn dict_min_char(dictionaries: Vec<Counter>) -> String {

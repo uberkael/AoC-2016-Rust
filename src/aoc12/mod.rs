@@ -1,88 +1,48 @@
-#![allow(unused)]
-
-use std::collections::HashMap;
+#[cfg(test)]
+mod tests;
 
 pub fn aoc12() {
 	println!("\nDay 12: Leonardo's Monorail");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/12/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/12/input.txt")
+		.expect("Error reading the file");
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let instructions = reader(&input);
+
+	println!("Part 1:\n{}", compute(&instructions, 0));
+	println!("Part 2:\n{}", compute(&instructions, 1));
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 enum Arg {
-	Reg(char),
+	Reg(usize),
 	Val(isize),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum Instruction {
-	Cpy(Arg, char),
-	Inc(char),
-	Dec(char),
-	Jnz(Arg, isize),
+	Cpy(Arg, Arg),
+	Inc(Arg),
+	Dec(Arg),
+	Jnz(Arg, Arg),
 }
 
 trait ParseShortcut {
 	fn c(&self) -> char;
-	fn p(&self) -> isize;
 	fn a(&self) -> Arg;
 }
 
 impl ParseShortcut for &str {
-	fn c(&self) -> char { self.chars().next().unwrap() }
-	fn p(&self) -> isize { self.parse().unwrap_or_default() }
+	fn c(&self) -> char {
+		self.chars().next().expect("Empty string")
+	}
 	fn a(&self) -> Arg {
 		if let Ok(val) = self.parse() {
 			Arg::Val(val)
 		} else {
-			Arg::Reg(self.c())
-		}
-	}
-}
-
-fn instruction(s: &str) -> Instruction {
-	let parts: Vec<&str> = s.split_whitespace().collect();
-	match parts[0] {
-		"cpy" => Instruction::Cpy(parts[1].a(), parts[2].c()),
-		"inc" => Instruction::Inc(parts[1].c()),
-		"dec" => Instruction::Dec(parts[1].c()),
-		"jnz" => Instruction::Jnz(parts[1].a(), parts[2].p()),
-		_ => panic!("Invalid instruction"),
-	}
-}
-
-fn execute(inst: &Instruction, registers: &mut HashMap<char, isize>) -> isize {
-	match inst {
-		Instruction::Cpy(src, dst) => {
-			let value = match src {
-				Arg::Reg(r) => *registers.get(r).unwrap_or(&0),
-				Arg::Val(v) => *v,
-			};
-			registers.insert(*dst, value);
-			1
-		}
-		Instruction::Inc(r) => {
-			*registers.entry(*r).or_insert(0) += 1;
-			1
-		}
-		Instruction::Dec(r) => {
-			*registers.entry(*r).or_insert(0) -= 1;
-			1
-		}
-		Instruction::Jnz(cond, offset) => {
-			let value = match cond {
-				Arg::Reg(r) => *registers.get(r).unwrap_or(&0),
-				Arg::Val(v) => *v,
-			};
-			if value != 0 {
-				*offset
-			} else {
-				1
-			}
+			// a -> 0, b -> 1, c -> 2, d -> 3 ...
+			Arg::Reg((self.c() as u8 - b'a') as usize)
 		}
 	}
 }
@@ -91,27 +51,155 @@ fn reader(input: &str) -> Vec<Instruction> {
 	input.lines().map(|line| instruction(line)).collect()
 }
 
-fn part1(input: &str) -> usize {
-	let instructions = reader(input);
-	let mut registers: HashMap<char, isize> = HashMap::new();
-	let mut ip: isize = 0;
-	while (ip >= 0) && ((ip as usize) < instructions.len()) {
-		let instruction = &instructions[ip as usize];
-		ip += execute(instruction, &mut registers);
+fn get_value(arg: &Arg, registers: &[isize; 4]) -> isize {
+	match arg {
+		Arg::Val(v) => *v,
+		Arg::Reg(r) => registers[*r],
 	}
-	*registers.get(&'a').unwrap_or(&0) as usize
 }
 
-
-/* Part 2 */
-fn part2(input: &str) -> usize {
-	let instructions = reader(input);
-	let mut registers: HashMap<char, isize> = HashMap::new();
-	registers.insert('c', 1);
-	let mut ip: isize = 0;
-	while (ip >= 0) && ((ip as usize) < instructions.len()) {
-		let instruction = &instructions[ip as usize];
-		ip += execute(instruction, &mut registers);
+fn instruction(s: &str) -> Instruction {
+	let parts: Vec<&str> = s.split_whitespace().collect();
+	match parts[0] {
+		"cpy" => Instruction::Cpy(parts[1].a(), parts[2].a()),
+		"inc" => Instruction::Inc(parts[1].a()),
+		"dec" => Instruction::Dec(parts[1].a()),
+		"jnz" => Instruction::Jnz(parts[1].a(), parts[2].a()),
+		_ => panic!("Instrucción inválida"),
 	}
-	*registers.get(&'a').unwrap_or(&0) as usize
+}
+
+fn execute(ip: usize, inst: &Instruction, registers: &mut [isize; 4]) -> usize {
+	match inst {
+		Instruction::Cpy(src, dst) => {
+			if let Arg::Reg(dst_reg) = dst {
+				let value = get_value(src, registers);
+				registers[*dst_reg] = value;
+			}
+			ip + 1
+		}
+		Instruction::Inc(arg) => {
+			if let Arg::Reg(r) = arg {
+				registers[*r] += 1;
+			}
+			ip + 1
+		}
+		Instruction::Dec(arg) => {
+			if let Arg::Reg(r) = arg {
+				registers[*r] -= 1;
+			}
+			ip + 1
+		}
+		Instruction::Jnz(cond, offset) => {
+			let value = get_value(cond, registers);
+			let jump = get_value(offset, registers);
+			if value != 0 {
+				if ip as isize + jump < 0 {
+					0
+				} else {
+					(ip as isize + jump) as usize
+				}
+			} else {
+				ip + 1
+			}
+		}
+	}
+}
+
+/// inc X
+/// dec Y
+/// jnz Y -2
+/// X += Y; Y = 0;
+fn try_sum(
+	ip: usize,
+	instructions: &Vec<Instruction>,
+	registers: &mut [isize; 4],
+) -> Option<usize> {
+	if (ip + 2) >= instructions.len() {
+		return None;
+	}
+	let Instruction::Inc(Arg::Reg(target)) = instructions[ip] else {
+		return None;
+	};
+	let Instruction::Dec(Arg::Reg(src)) = instructions[ip + 1] else {
+		return None;
+	};
+	let Instruction::Jnz(Arg::Reg(check), Arg::Val(offset)) = instructions[ip + 2] else {
+		return None;
+	};
+	if check != src || offset != -2 {
+		return None;
+	}
+	let val = registers[src];
+	registers[target] += val;
+	registers[src] = 0;
+	Some(3)
+}
+
+/// cpy X Y
+/// inc A
+/// dec Y
+/// jnz Y -2
+/// dec B
+/// jnz B -5
+/// a += X * B; Y = 0; B = 0;
+fn try_multiplication(
+	ip: usize,
+	instructions: &Vec<Instruction>,
+	registers: &mut [isize; 4],
+) -> Option<usize> {
+	if (ip + 5) >= instructions.len() {
+		return None;
+	}
+	let Instruction::Cpy(src, Arg::Reg(reg_y)) = instructions[ip] else {
+		return None;
+	};
+	let Instruction::Inc(Arg::Reg(reg_a)) = instructions[ip + 1] else {
+		return None;
+	};
+	let Instruction::Dec(Arg::Reg(reg_y2)) = instructions[ip + 2] else {
+		return None;
+	};
+	if reg_y != reg_y2 {
+		return None;
+	}
+	let Instruction::Jnz(Arg::Reg(reg_y3), Arg::Val(off1)) = instructions[ip + 3] else {
+		return None;
+	};
+	if reg_y != reg_y3 || off1 != -2 {
+		return None;
+	}
+	let Instruction::Dec(Arg::Reg(reg_b)) = instructions[ip + 4] else {
+		return None;
+	};
+	let Instruction::Jnz(Arg::Reg(reg_b2), Arg::Val(off2)) = instructions[ip + 5] else {
+		return None;
+	};
+	if reg_b != reg_b2 || off2 != -5 {
+		return None;
+	}
+	let factor = get_value(&src, registers);
+	let veces = registers[reg_b];
+	registers[reg_a] += factor * veces;
+	registers[reg_y] = 0;
+	registers[reg_b] = 0;
+	Some(6)
+}
+
+fn compute(instructions: &Vec<Instruction>, initialize: isize) -> usize {
+	let mut registers: [isize; 4] = [0; 4]; // Fixed array
+	registers[2] = initialize; // 'c' is 1
+	let mut ip = 0;
+	while ip < instructions.len() {
+		if let Some(jump) = try_multiplication(ip, &instructions, &mut registers) {
+			ip += jump;
+			continue;
+		}
+		if let Some(jump) = try_sum(ip, &instructions, &mut registers) {
+			ip += jump;
+			continue;
+		}
+		ip = execute(ip, &instructions[ip], &mut registers);
+	}
+	registers[0] as usize
 }

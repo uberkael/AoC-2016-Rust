@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc25() {
 	println!("\nDay 25: Clock Signal");
 	println!("━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/25/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/25/input.txt")
+		.expect("Error reading the file");
 	let instructions = reader(&input);
 
 	println!("Part 1:\n{}", checker(instructions));
@@ -38,7 +37,7 @@ trait ParseShortcut {
 
 impl ParseShortcut for &str {
 	fn c(&self) -> char {
-		self.chars().next().unwrap()
+		self.chars().next().expect("Empty string")
 	}
 	fn a(&self) -> Arg {
 		if let Ok(val) = self.parse() {
@@ -163,7 +162,6 @@ fn try_sum(
     registers[src] = 0;
     Some(3)
 }
-
 
 /// cpy X Y
 /// inc A

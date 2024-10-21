@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use std::collections::HashMap;
 
 #[cfg(test)]
@@ -9,7 +7,8 @@ pub fn aoc10() {
 	println!("\nDay 10: Balance Bots");
 	println!("━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/10/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/10/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	println!("Part 1:\n{}", part1(&input));

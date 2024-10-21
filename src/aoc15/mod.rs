@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use num::integer::lcm;
 
 #[cfg(test)]
@@ -9,7 +7,8 @@ pub fn aoc15() {
 	println!("\nDay 15: Timing is Everything");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/15/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/15/input.txt")
+		.expect("Error reading the file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));
@@ -23,9 +22,6 @@ struct Disc {
 impl Disc {
 	fn new(positions: usize, initial: usize) -> Self {
 		Self { positions, initial }
-	}
-	fn position(&self, time: usize) -> usize {
-		(self.initial + time) % self.positions
 	}
 }
 

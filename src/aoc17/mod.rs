@@ -1,6 +1,4 @@
-#![allow(dead_code)]
-
-use std::collections::HashMap;
+use std::collections::VecDeque;
 
 #[cfg(test)]
 mod tests;
@@ -9,7 +7,8 @@ pub fn aoc17() {
 	println!("\nDay 17: Two Steps Forward");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/17/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/17/input.txt")
+		.expect("Error reading input file");
 
 	println!("Part 1:\n{}", part1(&input));
 	println!("Part 2:\n{}", part2(&input));

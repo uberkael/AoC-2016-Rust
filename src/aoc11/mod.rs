@@ -1,8 +1,4 @@
-#![allow(unused)]
 use std::collections::{HashSet, VecDeque};
-
-#[cfg(test)]
-mod tests;
 
 pub fn aoc11() {
 	println!("\nDay 11: Radioisotope Thermoelectric Generators");

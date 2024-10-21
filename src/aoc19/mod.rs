@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,10 +5,13 @@ pub fn aoc19() {
 	println!("\nDay 19: An Elephant Named Joseph");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/19/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/19/input.txt")
+		.expect("Error reading the file");
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let input = input.trim().parse().expect("Invalid input");
+
+	println!("Part 1:\n{}", part1(input));
+	println!("Part 2:\n{}", part2(input));
 }
 
 /* 2(n−2^(log_2(n)⌋)+1) */
@@ -27,8 +28,7 @@ fn josephus(n: usize) -> usize {
 	}
 }
 
-fn part1(input: &str) -> usize {
-	let input = input.trim().parse().unwrap();
+fn part1(input: usize) -> usize {
 	josephus(input)
 }
 
@@ -50,7 +50,6 @@ fn josephus_opposite(n: usize) -> usize {
 	}
 }
 
-fn part2(input: &str) -> usize {
-	let n: usize = input.trim().parse().unwrap();
-	josephus_opposite(n)
+fn part2(input: usize) -> usize {
+	josephus_opposite(input)
 }

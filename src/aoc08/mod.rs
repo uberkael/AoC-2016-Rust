@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 #[cfg(test)]
 mod tests;
 
@@ -7,7 +5,8 @@ pub fn aoc08() {
 	println!("\nDay 8: Two-Factor Authentication");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-	let input = std::fs::read_to_string("input/08/input.txt").unwrap();
+	let input = std::fs::read_to_string("input/08/input.txt")
+		.expect("Error reading file");
 
 	/* Part 1 */
 	println!("Part 1:\n{}", part1(&input));
@@ -136,7 +135,6 @@ impl std::fmt::Display for Screen {
 		Ok(())
 	}
 }
-
 
 fn part2(s: &str) -> Screen {
 	let mut screen = Screen([[false; 50]; 6]);
