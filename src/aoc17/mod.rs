@@ -24,76 +24,79 @@ enum Direction {
 	Right,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone)]
 struct Room {
-	doors: [bool; 4], // up, down, left, and right
-	passcode: Vec<u8>,
+	buffer: Vec<u8>,
 	position: (u8, u8),
+	doors: [bool; 4],
 }
 
 impl Room {
-	fn new(passcode: Vec<u8>, position: (u8, u8)) -> Self {
+	fn new(buffer: Vec<u8>, position: (u8, u8)) -> Self {
+		let doors = Self::check_directions(&buffer);
 		Room {
-			doors: Self::check_directions(&passcode),
-			passcode,
+			buffer,
 			position,
+			doors,
 		}
 	}
-	fn check_directions(passcode: &[u8]) -> [bool; 4] {
-		let hash = format!("{:x}", md5::compute(passcode));
-		hash.chars()
-			.take(4)
-			.map(|c| c > 'a')
-			.collect::<Vec<bool>>()
-			.try_into()
-			.unwrap()
-	}
-	fn check_limit(&self, direction: &Direction) -> bool {
-		let (x, y) = self.position;
-		match direction {
-			Direction::Up    => y > 0,
-			Direction::Down  => y < 3,
-			Direction::Left  => x > 0,
-			Direction::Right => x < 3,
-		}
+
+	fn check_directions(buffer: &[u8]) -> [bool; 4] {
+		let digest = md5::compute(buffer);
+		let bytes = digest.0;
+		[
+			(bytes[0] >> 4)  > 0xA, // Up
+			(bytes[0] & 0xF) > 0xA, // Down
+			(bytes[1] >> 4)  > 0xA, // Left
+			(bytes[1] & 0xF) > 0xA, // Right
+		]
 	}
 	fn next(&self, direction: Direction) -> Option<Self> {
-		if !self.check_limit(&direction) {
-			return None;
-		}
 		let (x, y) = self.position;
-		let (new_position, letter) = match direction {
-			Direction::Up    => ((x, y.saturating_sub(1)), b'U'),
-			Direction::Down  => ((x, y + 1), b'D'),
-			Direction::Left  => ((x.saturating_sub(1), y), b'L'),
-			Direction::Right => ((x + 1, y), b'R'),
+		let (new_x, new_y) = match direction {
+			Direction::Up    if y > 0 => (x, y - 1),
+			Direction::Down  if y < 3 => (x, y + 1),
+			Direction::Left  if x > 0 => (x - 1, y),
+			Direction::Right if x < 3 => (x + 1, y),
+			_ => return None,
 		};
-		// Concatenate the current passcode with the new letter
-		let mut new_passcode = self.passcode.clone();
-		new_passcode.push(letter);
-		Some(Room::new(new_passcode, new_position))
+		let mut new_buffer = self.buffer.clone();
+		new_buffer.push(match direction {
+			Direction::Up    => b'U',
+			Direction::Down  => b'D',
+			Direction::Left  => b'L',
+			Direction::Right => b'R',
+		});
+		Some(Room::new(new_buffer, (new_x, new_y)))
 	}
 }
 
-fn bfs(room: Room) -> String {
-	let original_passcode = room.passcode.clone();
-	let mut queue = std::collections::VecDeque::new();
-	queue.push_back(room);
+fn part1(passcode: Vec<u8>) -> String {
+	let initial_room = Room::new(passcode, (0, 0));
+	bfs_shortest(initial_room)
+}
+
+fn bfs_shortest(initial_room: Room) -> String {
+	let passcode_len = initial_room.buffer.len();
+	let mut queue = VecDeque::new();
+	queue.push_back(initial_room);
 	while let Some(room) = queue.pop_front() {
 		if room.position == (3, 3) {
-			let path = room.passcode[original_passcode.len()..].to_vec();
-			return String::from_utf8(path).unwrap();
+			return String::from_utf8(room.buffer[passcode_len..].to_vec())
+				.expect("Invalid UTF-8");
 		}
-		let directions = [
-			(Direction::Up, 0),
-			(Direction::Down, 1),
-			(Direction::Left, 2),
-			(Direction::Right, 3),
-		];
-		for (direction, index) in directions.iter() {
-			if room.doors[*index] {
-				if let Some(next_room) = room.next(*direction) {
-					queue.push_back(next_room);
+		for (dir_idx, direction) in [
+			Direction::Up,
+			Direction::Down,
+			Direction::Left,
+			Direction::Right,
+		]
+		.iter()
+		.enumerate()
+		{
+			if room.doors[dir_idx] {
+				if let Some(next) = room.next(*direction) {
+					queue.push_back(next);
 				}
 			}
 		}
@@ -101,57 +104,36 @@ fn bfs(room: Room) -> String {
 	String::new()
 }
 
-fn part1(input: &str) -> String {
-	let passcode = input.trim().as_bytes().to_vec();
+fn part2(passcode: Vec<u8>) -> usize {
 	let initial_room = Room::new(passcode, (0, 0));
-	bfs(initial_room)
+	longest_path(initial_room)
 }
 
-fn dfs(
-	room: Room,
-	memo: &mut HashMap<(u8, u8, String), Option<usize>>,
-) -> Option<usize> {
-	let current_path = String::from_utf8(room.passcode.to_vec()).unwrap();
-	let key = (room.position.0, room.position.1, current_path.clone());
-	if let Some(&cached) = memo.get(&key) {
-		return cached;
-	}
-	if room.position == (3, 3) {
-		let res = Some(current_path.len());
-		memo.insert(key, res);
-		return res;
-	}
-	let directions = [
-		(Direction::Up, 0),
-		(Direction::Down, 1),
-		(Direction::Left, 2),
-		(Direction::Right, 3),
-	];
-	let mut best: Option<usize> = None;
-	for (direction, index) in directions.iter() {
-		if room.doors[*index] {
-			if let Some(next_room) = room.next(*direction) {
-				if let Some(path_len) = dfs(next_room, memo) {
-					best = Some(match best {
-						Some(current_best) => current_best.max(path_len),
-						None => path_len,
-					});
+fn longest_path(initial_room: Room) -> usize {
+	let passcode_len = initial_room.buffer.len();
+	let mut max_length = 0;
+	let mut stack = vec![initial_room];
+	while let Some(room) = stack.pop() {
+		if room.position == (3, 3) {
+			let path_length = room.buffer.len() - passcode_len;
+			max_length = max_length.max(path_length);
+			continue;
+		}
+		for (dir_idx, direction) in [
+			Direction::Up,
+			Direction::Down,
+			Direction::Left,
+			Direction::Right,
+		]
+		.iter()
+		.enumerate()
+		{
+			if room.doors[dir_idx] {
+				if let Some(next_room) = room.next(*direction) {
+					stack.push(next_room);
 				}
 			}
 		}
 	}
-	memo.insert(key, best);
-	best
-}
-
-fn longest_path(room: Room) -> usize {
-	let original_len = room.passcode.len();
-	let mut memo = HashMap::new();
-	dfs(room, &mut memo).unwrap_or(0) - original_len
-}
-
-fn part2(input: &str) -> usize {
-	let passcode = input.trim().as_bytes().to_vec();
-	let initial_room = Room::new(passcode, (0, 0));
-	longest_path(initial_room)
+	max_length
 }
