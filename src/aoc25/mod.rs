@@ -147,6 +147,10 @@ fn toggle(inst: &Instruction) -> Instruction {
 	}
 }
 
+/// inc X
+/// dec Y
+/// jnz Y -2
+/// X += Y; Y = 0;
 fn try_sum(
     ip: usize,
     instructions: &Vec<Instruction>,
@@ -195,9 +199,9 @@ fn try_multiplication(
 	Some(6)
 }
 
-fn compute(mut instructions: Vec<Instruction>, eggs: isize) -> Vec<isize> {
+fn compute(mut instructions: Vec<Instruction>, initial: isize) -> Vec<isize> {
 	let mut registers: [isize; 4] = [0; 4]; // Fixed array
-	registers[0] = eggs; // 'a' is 0
+	registers[0] = initial; // 'a'
 	let mut output: Vec<isize> = vec![];
 	let mut ip = 0;
 	while ip < instructions.len() {

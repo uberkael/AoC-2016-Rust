@@ -131,6 +131,10 @@ fn toggle(inst: &Instruction) -> Instruction {
 	}
 }
 
+/// inc X
+/// dec Y
+/// jnz Y -2
+/// X += Y; Y = 0;
 fn try_sum(
     ip: usize,
     instructions: &Vec<Instruction>,

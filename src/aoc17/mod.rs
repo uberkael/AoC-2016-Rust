@@ -10,8 +10,10 @@ pub fn aoc17() {
 	let input = std::fs::read_to_string("input/17/input.txt")
 		.expect("Error reading input file");
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let passcode = input.trim().as_bytes().to_vec();
+
+	println!("Part 1:\n{}", part1(passcode.clone()));
+	println!("Part 2:\n{}", part2(passcode));
 }
 
 #[derive(Copy, Clone)]

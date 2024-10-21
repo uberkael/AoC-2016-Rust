@@ -41,12 +41,14 @@ fn check_triangle(t: &Triangle) -> bool {
 	sum - max > max
 }
 
-
 /* Part 2 */
 fn parse_input2(input: &str) -> Vec<Triangle> {
 	let mut result = Vec::new();
-	for three_lines in input.lines().collect::<Vec<&str>>().chunks(3) {
-		result.append(&mut parse_lines(three_lines));
+	let mut lines = input.lines().collect::<Vec<&str>>();
+	while lines.len() >= 3 {
+		let three_lines = &lines[..3];
+		result.extend(parse_lines(three_lines));
+		lines.drain(..3);
 	}
 	result
 }

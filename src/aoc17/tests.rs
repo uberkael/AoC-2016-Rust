@@ -24,9 +24,9 @@ fn test_room_next() {
 	let passcode = b"hijkl".to_vec();
 	let room = Room::new(passcode, (0, 0));
 	let up = room.next(Direction::Up);
-	let down = room.next(Direction::Down).unwrap();
+	let down = room.next(Direction::Down).expect("Down is None");
 	let left = room.next(Direction::Left);
-	let right = room.next(Direction::Right).unwrap();
+	let right = room.next(Direction::Right).expect("Right is None");
 	assert_eq!(up, None);
 	assert_eq!(down.position, (0, 1));
 	assert_eq!(down, Room::new(b"hijklD".to_vec(), (0, 1)));

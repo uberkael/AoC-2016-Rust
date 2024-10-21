@@ -10,16 +10,13 @@ pub fn aoc04() {
 	let input = std::fs::read_to_string("input/04/input.txt")
 		.expect("Error reading file");
 
-	/* Part 1 */
-	println!("Part 1:\n{}", parte1(&input));
+	let rooms: Vec<Room> = input.lines().map(|x| Room::new(x)).collect();
 
-	/* Part 2 */
-	println!("Part 2:\n{}", parte2(&input));
-
+	println!("Part 1:\n{}", parte1(&rooms));
+	println!("Part 2:\n{}", parte2(rooms));
 }
 
-fn parte1(input: &str) -> usize {
-	let rooms: Vec<Room> = input.lines().map(|x| Room::new(x)).collect();
+fn parte1(rooms: &Vec<Room>) -> usize {
 	rooms.iter().filter(|r| r.is_real()).map(|r| r.sector).sum()
 }
 
@@ -87,8 +84,7 @@ fn cipher(c: char, n: usize) -> char { // TODO: Simplificar
 	}
 }
 
-fn parte2(input: &str) -> usize {
-	let rooms: Vec<Room> = input.lines().map(|x| Room::new(x)).collect();
+fn parte2(rooms: Vec<Room>) -> usize {
 	let reals = rooms.iter().filter(|r| r.is_real());
 	for room in reals {
 		let decrypted = room.decrypt();

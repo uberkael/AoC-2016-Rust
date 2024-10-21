@@ -10,8 +10,11 @@ pub fn aoc13() {
 	let input = std::fs::read_to_string("input/13/input.txt")
 		.expect("Error reading the file");
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let favorite = input.trim().parse().expect("Invalid input");
+	let maze = Maze::new(favorite, 50, 50);
+
+	println!("Part 1:\n{}", part1(maze.clone()));
+	println!("Part 2:\n{}", part2(maze));
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -132,16 +135,12 @@ impl Maze {
 }
 
 /* Part1 */
-fn part1(input: &str) -> usize {
-	let favorite = input.trim().parse().unwrap();
-	let maze = Maze::new(favorite, 50, 50);
+fn part1(maze: Maze) -> usize {
 	// maze.print();
 	maze.solve(31, 39)
 }
 
 /* Part2 */
-fn part2(input: &str) -> usize {
-	let favorite = input.trim().parse().unwrap();
-	let maze = Maze::new(favorite, 50, 50);
+fn part2(maze: Maze) -> usize {
 	maze.solve_till_n(50)
 }

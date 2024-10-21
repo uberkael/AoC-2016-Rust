@@ -13,8 +13,11 @@ pub fn aoc24() {
 		.trim()
 		.to_string();
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let d = Duct::new(&input);
+	let distances = d.distances();
+
+	println!("Part 1:\n{}", part1(&distances));
+	println!("Part 2:\n{}", part2(&distances));
 }
 
 struct Duct {
@@ -40,6 +43,7 @@ impl Duct {
 		locations.sort_by_key(|&(c, _)| c);
 		Duct { nodes, locations }
 	}
+	#[allow(unused)]
 	fn print(&self) {
 		for row in &self.nodes {
 			for &c in row {
@@ -117,9 +121,7 @@ fn find_shortest(distances: &Vec<Vec<usize>>) -> usize {
 	min_distance
 }
 
-fn part1(input: &str) -> usize {
-	let d = Duct::new(input);
-	let distances = d.distances();
+fn part1(distances: &Vec<Vec<usize>>) -> usize {
 	find_shortest(&distances)
 }
 
@@ -139,8 +141,6 @@ fn find_shortest_with_return(distances: &Vec<Vec<usize>>) -> usize {
 	min_distance
 }
 
-fn part2(input: &str) -> usize {
-	let d = Duct::new(input);
-	let distances = d.distances();
+fn part2(distances: &Vec<Vec<usize>>) -> usize {
 	find_shortest_with_return(&distances)
 }

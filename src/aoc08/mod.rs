@@ -128,7 +128,7 @@ impl std::fmt::Display for Screen {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
 		for row in self.0.iter() {
 			for &pixel in row.iter() {
-				write!(f, "{}", if pixel { '#' } else { '.' })?;
+				write!(f, "{}", if pixel { '█' } else { '‧' })?;
 			}
 			writeln!(f)?;
 		}

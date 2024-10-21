@@ -20,6 +20,7 @@ pub fn aoc01() {
 
 }
 
+#[derive(Clone)]
 struct Instructions {
 	instructions: Vec<Instruction>,
 }
@@ -32,6 +33,7 @@ impl Instructions {
 	}
 }
 
+#[derive(Clone)]
 struct Instruction {
 	turn: char,
 	distance: i32,
@@ -94,15 +96,15 @@ impl MrTaxi {
 		}
 	}
 
-	fn moves(&mut self, instructions: Instructions) {
-		for instruction in instructions.instructions {
+	fn moves(&mut self, instructions: &Instructions) {
+		for instruction in &instructions.instructions {
 			self.change_direction(&instruction.turn);
 			self.point = self.point.move_n(&self.direction, instruction.distance);
 		}
 	}
 
-	fn moves2(&mut self, instructions: Instructions) {
-		for instruction in instructions.instructions {
+	fn moves2(&mut self, instructions: &Instructions) {
+		for instruction in &instructions.instructions {
 			self.change_direction(&instruction.turn);
 			for _ in 0..instruction.distance {
 				self.point = self.point.move_n(&self.direction, 1);

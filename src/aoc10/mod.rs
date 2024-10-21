@@ -9,12 +9,14 @@ pub fn aoc10() {
 
 	let input = std::fs::read_to_string("input/10/input.txt")
 		.expect("Error reading file");
+	let mut bots = bots_generate(&input);
+	bots = bot_configure(bots, &input);
 
 	/* Part 1 */
-	println!("Part 1:\n{}", part1(&input));
+	println!("Part 1:\n{}", part1(bots.clone()));
 
 	/* Part 2 */
-	println!("Part 2:\n{}", part2(&input));
+	println!("Part 2:\n{}", part2(bots));
 }
 
 /* Part 1 */
@@ -42,9 +44,7 @@ enum To {
 	Output(usize),
 }
 
-fn part1(input: &str) -> isize {
-	let mut bots = bots_generate(input);
-	bots = bot_configure(bots, input);
+fn part1(bots: HashMap<usize, Bot>) -> isize {
 	bot_run(bots)
 }
 
@@ -159,10 +159,7 @@ fn check_finish(bot: &Bot) -> bool {
 }
 
 /* Part 2 */
-
-fn part2(input: &str) -> isize {
-	let mut bots = bots_generate(input);
-	bots = bot_configure(bots, input);
+fn part2(bots: HashMap<usize, Bot>) -> isize {
 	bot_run2(bots)
 }
 
