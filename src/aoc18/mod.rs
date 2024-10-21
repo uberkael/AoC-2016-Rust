@@ -8,115 +8,39 @@ pub fn aoc18() {
 	let input = std::fs::read_to_string("input/18/input.txt")
 		.expect("Error reading input file");
 
-	println!("Part 1:\n{}", part1(&input));
-	println!("Part 2:\n{}", part2(&input));
+	let input = input.trim();
+	let (prev, n) = parse_row(input);
 
+	println!("Part 1:\n{}", part1(prev, n));
+	println!("Part 2:\n{}", part2(prev, n));
 }
 
-struct Map {
-	size: usize,
-	rows: Vec<Row>,
-}
-
-impl Map {
-	fn new(size: usize, data: String) -> Self {
-		let row = Row::new(data);
-		Map::new_from_row(size, row)
-	}
-	fn new_from_row(size: usize, row: Row) -> Self {
-		let mut r = Self { size, rows: vec![] };
-		r.generate(row);
-		r
-	}
-	fn to_string(&self) -> String {
-		self.rows.iter().map(|r| r.to_string()).collect::<Vec<_>>().join("\n")
-	}
-	fn count_safe(&self) -> usize {
-		self.rows.iter().map(|r| r.count_safe()).sum()
-	}
-	fn generate(&mut self, mut row: Row) {
-		self.rows.push(row.clone());
-		for _ in 1..self.size {
-			let new_row = row.generate_row();
-			self.rows.push(new_row.clone());
-			row = new_row;
+fn parse_row(input: &str) -> (u128, u32) {
+	let n = input.len() as u32;
+	let mut row = 0;
+	for (i, c) in input.chars().enumerate() {
+		if c == '^' {
+			row |= 1 << (n - 1 - (i as u32)); // 1 trap
 		}
 	}
+	(row, n)
 }
 
-#[derive(Clone)]
-struct Row {
-	tiles: Vec<Tile>,
-}
-
-impl Row {
-	fn new(data: String) -> Self {
-		let row = data.chars().map(|c| Tile { trap: c == '^' }).collect();
-		Self { tiles: row }
+fn count_safe(mut prev: u128, n: u32, m: usize) -> u32 {
+	let mask = (1 << n) - 1; // solo usamos n de u128
+	let mut safe = n - prev.count_ones();
+	for _ in 1..m {
+		// izq XOR der
+		prev = ((prev << 1) ^ (prev >> 1)) & mask;
+		safe += n - prev.count_ones();
 	}
-	fn to_string(&self) -> String {
-		self.tiles.iter().map(|t| t.to_string()).collect()
-	}
-	fn count_safe(&self) -> usize {
-		self.tiles.iter().filter(|t| !t.trap).count()
-	}
-	fn generate_row(&self) -> Row {
-		let mut new_row = Row { tiles: Vec::new() };
-		let mut parents = [false; 3];
-		for (i, tile) in self.tiles.iter().enumerate() {
-			if i == 0 {
-				parents[0] = false;
-			} else {
-				parents[0] = self.tiles[i - 1].trap;
-			}
-			if i == self.tiles.len() - 1 {
-				parents[2] = false;
-			} else {
-				parents[2] = self.tiles[i + 1].trap;
-			}
-			parents[1] = tile.trap;
-			new_row.tiles.push(Tile::new(parents));
-		}
-		new_row
-	}
+	safe
 }
 
-impl std::fmt::Display for Row {
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-		write!(f, "{}", self.to_string())
-	}
-}
-#[derive(Clone, Copy)]
-struct Tile {
-	trap: bool,
+fn part1(prev: u128,n: u32) -> u32 {
+	count_safe(prev, n, 40)
 }
 
-impl Tile {
-	fn new(parents: [bool; 3]) -> Self {
-		let trap = match parents {
-			[true, true, false] => true,
-			[false, true, true] => true,
-			[true, false, false] => true,
-			[false, false, true] => true,
-			_ => false,
-		};
-		Self { trap }
-	}
-}
-
-impl std::fmt::Display for Tile {
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-		write!(f, "{}", if self.trap { '^' } else { '.' })
-	}
-}
-
-fn part1(input: &str) -> usize {
-	let map = Map::new(40, input.trim().to_string());
-	map.count_safe()
-}
-
-
-fn part2(input: &str) -> usize {
-	let map = Map::new(400000, input.trim().to_string());
-	map.count_safe()
+fn part2(prev: u128, n: u32) -> u32 {
+	count_safe(prev, n, 400_000)
 }
