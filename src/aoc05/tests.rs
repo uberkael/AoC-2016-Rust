@@ -48,7 +48,7 @@ fn test1_generator() {
 	let input = generate_number("abc").take(5).collect::<Vec<_>>();
 	assert_eq!(vec!["abc0", "abc1", "abc2", "abc3", "abc4"], input);
 
-	let input = generate_number("abc").nth(5000).unwrap();
+	let input = generate_number("abc").nth(5000).expect("No value");
 	assert_eq!("abc5000", input);
 }
 
@@ -90,7 +90,6 @@ fn part1() {
 }
 
 /* Part 2 */
-
 #[test]
 fn part2_get_data() {
 	assert_eq!((0,  '0'), get_data("000000000"));

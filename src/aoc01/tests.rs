@@ -2,7 +2,6 @@ use super::*;
 
 #[test]
 fn instructions() {
-	// let a = create_instructions("R2, L3");
 	let a = Instructions::new("R2, L3");
 	assert_eq!(a.instructions[0].turn, 'R');
 	assert_eq!(a.instructions[0].distance, 2);
@@ -14,7 +13,7 @@ fn instructions() {
 fn test_mr_taxi_moves() {
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R2, L3");
-	mr_taxi.moves(instructions);
+	mr_taxi.moves(&instructions);
 	assert_eq!(mr_taxi.point.x, 2);
 	assert_eq!(mr_taxi.point.y, 3);
 }
@@ -25,7 +24,7 @@ fn test_mr_taxi_moves() {
 fn test1() {
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R2, L3");
-	mr_taxi.moves(instructions);
+	mr_taxi.moves(&instructions);
 	assert_eq!(mr_taxi.distance(), 5);
 }
 
@@ -35,26 +34,26 @@ fn test1() {
 fn test2() {
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R2, R2, R2");
-	mr_taxi.moves(instructions);
+	mr_taxi.moves(&instructions);
 	assert_eq!(mr_taxi.distance(), 2);
 }
 
+/* "R5, L5, R5, R3"
+(10, 2) -> 12 */
 #[test]
 fn test3() {
-	/* "R5, L5, R5, R3" (10, 2) -> 12 */
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R5, L5, R5, R3");
-	mr_taxi.moves(instructions);
+	mr_taxi.moves(&instructions);
 	assert_eq!(mr_taxi.distance(), 12);
 }
 
 /* Part 2 */
-
 /* "R8, R4, R4, R8" -> 4 */
 #[test]
 fn test4() {
 	let mut mr_taxi = MrTaxi::new();
 	let instructions = Instructions::new("R8, R4, R4, R8");
-	mr_taxi.moves2(instructions);
+	mr_taxi.moves2(&instructions);
 	assert_eq!(mr_taxi.distance(), 4);
 }

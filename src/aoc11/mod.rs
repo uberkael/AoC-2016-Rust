@@ -1,5 +1,8 @@
 use std::collections::{HashSet, VecDeque};
 
+#[cfg(test)]
+mod tests;
+
 pub fn aoc11() {
 	println!("\nDay 11: Radioisotope Thermoelectric Generators");
 	println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -76,6 +79,7 @@ fn bfs(init: State) -> usize {
 	visited.insert(init);
 	while let Some((state, steps)) = queue.pop_front() {
 		if state.floors[3].total() == complete {
+			// Todos los items están en el último piso, retornar el número de pasos
 			return steps;
 		}
 		let cur = (state.elevator - 1) as usize;
@@ -86,16 +90,13 @@ fn bfs(init: State) -> usize {
 				let dest_idx = (dest - 1) as usize;
 				let mut min_moved = 3; // Máximo 2
 				for m in MOVES.iter().rev() {
-					if m.total() > min_moved
-					{ break; }
-					if cant_move(cur, m, state)
-					{ continue; } // Not enough items
+					if m.total() > min_moved { break; }
+					if cant_move(cur, m, state) { continue; } // Not enough items
 					let mut next = state.clone();
 					next.elevator = dest;
 					next.floors[cur] = next.floors[cur].sub(m);
 					next.floors[dest_idx] = next.floors[dest_idx].add(m);
-					if not_valid(cur, dest_idx, next)
-					{ continue; }
+					if not_valid(cur, dest_idx, next) { continue; }
 					if visited.insert(next.clone()) {
 						min_moved = m.total();
 						queue.push_back((next, steps + 1));
@@ -108,16 +109,13 @@ fn bfs(init: State) -> usize {
 			let dest_idx = (dest - 1) as usize;
 			let mut max_moved = 0;
 			for m in MOVES.iter() {
-				if m.total() < max_moved
-				{ break; }
-				if cant_move(cur, m, state)
-				{ continue; } // Not enough items
+				if m.total() < max_moved { break; }
+				if cant_move(cur, m, state) { continue; } // Not enough items
 				let mut next = state.clone();
 				next.elevator = dest;
 				next.floors[cur] = next.floors[cur].sub(m);
 				next.floors[dest_idx] = next.floors[dest_idx].add(m);
-				if not_valid(cur, dest_idx, next)
-				{	continue; } // Estado inválido, saltar
+				if not_valid(cur, dest_idx, next) { continue; } // Estado inválido, saltar
 				if visited.insert(next.clone()) {
 					max_moved = m.total();
 					queue.push_back((next, steps + 1));

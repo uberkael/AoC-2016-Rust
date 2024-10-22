@@ -81,9 +81,9 @@ fn test1_setup() {
 	assert_eq!(
 		s,
 		ScreenMini::from_string(
-".......
-.......
-......."
+			".......\n\
+			 .......\n\
+			 ......."
 		)
 	);
 }
@@ -104,9 +104,9 @@ fn test1_rect() {
 	assert_eq!(
 		s,
 		ScreenMini::from_string(
-"###....
-###....
-......."
+			"###....\n\
+			 ###....\n\
+			 ......."
 		)
 	);
 }
@@ -121,9 +121,9 @@ fn test1_column() {
 	assert_eq!(
 		s,
 		ScreenMini::from_string(
-"#.#....
-###....
-.#....."
+			"#.#....\n\
+			 ###....\n\
+			 .#....."
 		)
 	);
 }
@@ -139,9 +139,9 @@ fn test1_row() {
 	assert_eq!(
 		s,
 		ScreenMini::from_string(
-"....#.#
-###....
-.#....."
+			"....#.#\n\
+			 ###....\n\
+			 .#....."
 		)
 	);
 }
@@ -158,9 +158,9 @@ fn test1_all() {
 	assert_eq!(
 		s,
 		ScreenMini::from_string(
-".#..#.#
-#.#....
-.#....."
-			)
-		);
+			".#..#.#\n\
+			 #.#....\n\
+			 .#....."
+		)
+	);
 }

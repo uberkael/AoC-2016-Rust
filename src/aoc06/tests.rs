@@ -16,7 +16,6 @@ nssdts\nntnada\nsvetve\ntesnvt\nvntsnd\nvrdear\ndvrsen\nenarar";
 }
 
 /* Part 2 */
-
 #[test]
 fn test2_input() {
 	let input = "eedadn\ndrvtee\neandsr\nraavrd\natevrs\ntsrnev\nsdttsa\nrasrtv

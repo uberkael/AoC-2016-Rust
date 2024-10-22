@@ -16,11 +16,8 @@ fn test_execute_out() {
 	let instructions = vec![
 		Instruction::Out(Arg::Val(1)),
 		Instruction::Out(Arg::Val(0)),
+		Instruction::Out(Arg::Val(1)),
 	];
-	let mut registers = [0; 4];
-	let mut ip = 0;
-	ip = execute(ip, &instructions[ip], &mut registers);
-	assert_eq!(ip, 1);
-	ip = execute(ip, &instructions[ip], &mut registers);
-	assert_eq!(ip, 2);
+	let output = compute(instructions.clone(), 0);
+	assert_eq!(output, vec![1, 0, 1]);
 }

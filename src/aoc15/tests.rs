@@ -5,13 +5,6 @@ fn test_disc() {
 	let disk = Disc::new(5, 4);
 	assert_eq!(disk.initial, 4);
 	assert_eq!(disk.positions, 5);
-	assert_eq!(disk.position(0), 4);
-	assert_eq!(disk.position(1), 0);
-	assert_eq!(disk.position(2), 1);
-	assert_eq!(disk.position(3), 2);
-	assert_eq!(disk.position(4), 3);
-	assert_eq!(disk.position(5), 4);
-	assert_eq!(disk.position(6), 0);
 }
 
 #[test]

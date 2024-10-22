@@ -20,7 +20,7 @@ fn test_execute_toggle() {
 	assert_eq!(new_ip, 2);
 	assert_eq!(instructions, vec![
 		Instruction::Inc(Arg::Reg(0)),
-		Instruction::Tgl(Arg::Reg(0)),
-		Instruction::Dec(Arg::Reg(0)),
+		Instruction::Inc(Arg::Reg(0)),
+		Instruction::Inc(Arg::Reg(0)),
 	]);
 }

@@ -35,7 +35,7 @@ fn test_bfs() {
 	 ###########");
 	let first = d.locations[0].1;
 	let last = d.locations[d.locations.len() - 1].1;
-	assert_eq!(7, d.bfs(first, last).unwrap());
+	assert_eq!(7, d.bfs(first, last).expect("No path found"));
 }
 
 #[test]

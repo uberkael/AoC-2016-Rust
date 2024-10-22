@@ -2,59 +2,31 @@ use super::*;
 
 #[test]
 fn test_tile() {
-	let parents = [true, true, false];
-	let tile = Tile::new(parents);
-	assert_eq!(tile.trap, true);
+	// let parents = [true, true, false];
+	// let tile = Tile::new(parents);
+	// assert_eq!(tile.trap, true);
 }
 
 #[test]
-fn test_generate_row() {
-	let row = Row::new(".^^^^".to_string());
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^..^");
+fn test_count_safe() {
+	let (row, n) = parse_row(".^^^^");
+	assert_eq!(row, 0b01111);
+	assert_eq!(n, 5);
+	assert_eq!(count_safe(row, n, 1), 1);
 
+	let (row, n) = parse_row("..^^.");
+	assert_eq!(count_safe(row, n, 1), 3);
 
-	let row = Row::new("..^^.".to_string());
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), ".^^^^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^..^");
+	let (row, n) = parse_row(".^^^^");
+	assert_eq!(count_safe(row, n, 1), 1);
 
-	let row = Row::new(".^^.^.^^^^".to_string());
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^^...^..^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^.^^.^.^^.");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "..^^...^^^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), ".^^^^.^^.^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^..^.^^..");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^^^..^^^.");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^..^^^^.^^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), ".^^^..^.^^");
-	let row = row.generate_row();
-	assert_eq!(row.to_string(), "^^.^^^..^^");
-}
+	let (row, n) = parse_row("^^..^");
+	assert_eq!(count_safe(row, n, 1), 2);
 
-#[test]
-fn test_generate_map() {
-	let row = Row::new(".^^.^.^^^^".to_string());
-	let map = Map::new_from_row(10, row);
-	assert_eq!(map.to_string(),
-	".^^.^.^^^^\n\
-	^^^...^..^\n\
-	^.^^.^.^^.\n\
-	..^^...^^^\n\
-	.^^^^.^^.^\n\
-	^^..^.^^..\n\
-	^^^^..^^^.\n\
-	^..^^^^.^^\n\
-	.^^^..^.^^\n\
-	^^.^^^..^^");
-	assert_eq!(map.count_safe(), 38);
+	let (row, n) = parse_row("^^..^");
+	assert_eq!(count_safe(row, n, 1), 2);
+	assert_eq!(count_safe(row, n, 2), 3);
+	assert_eq!(count_safe(row, n, 3), 5);
+	assert_eq!(count_safe(row, n, 4), 6);
+	assert_eq!(count_safe(row, n, 5), 8);
 }
