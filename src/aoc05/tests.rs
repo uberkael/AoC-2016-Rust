@@ -1,4 +1,32 @@
+#![allow(deprecated)]
+
 use super::*;
+
+#[deprecated(note = "Deprecated function: use byte verification in find_valid_in_range for better performance")]
+fn check_zeros(s: &str) -> bool {
+    s.starts_with("00000")
+}
+
+#[deprecated(note = "Deprecated function: use get_char with &[u8; 16] for better performance")]
+fn get_char(s: &str) -> char {
+    // returns the 6th character (index 5) of the hash
+    s.chars().nth(5).unwrap_or('_')
+}
+
+#[deprecated(note = "Deprecated function: use get_data with &[u8; 16] for better performance")]
+fn get_data(s: &str) -> (usize, char) {
+    // Get position and character from the MD5 hash
+    let chars: Vec<_> = s.chars().collect();
+    let pos = chars.get(5).and_then(|c| c.to_digit(16)).unwrap_or(0) as usize;
+    let c   = *chars.get(6).unwrap_or(&'_');
+    (pos, c)
+}
+
+#[deprecated(note = "Deprecated function: replaced by inline logic in find_valid_in_range")]
+fn generate_number(prefix: &str) -> Box<dyn Iterator<Item = String>> {
+    let prefix = prefix.to_string();
+    Box::new((0..).map(move |n| format!("{}{}", prefix, n)))
+}
 
 #[test]
 fn test1_md5() {
