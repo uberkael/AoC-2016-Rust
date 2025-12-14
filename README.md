@@ -17,8 +17,16 @@ Place your inputs in `inputs/n/input`, where `n` is the day number.
 
 ## Usage
 
-Clone this repository:
+Clone this repository and run:
 
 ```bash
 cargo run --release
+# or
+cargo run
+```
+
+Or run the tests
+
+```bash
+cargo test
 ```
