@@ -30,7 +30,7 @@ fn merge(mut ranges: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
 	ranges.sort_by_key(|&(start, _)| start);
 	let mut current_range = ranges[0];
 	for &(start, end) in &ranges[1..] {
-		if start <= current_range.1 + 1 {
+		if start <= current_range.1.saturating_add(1) {
 			current_range.1 = current_range.1.max(end);
 		} else {
 			merged.push(current_range);
@@ -49,11 +49,11 @@ fn ip_min(ranges: &Vec<(u32, u32)>) -> u32 {
 	for i in 1..ranges.len() {
 		let (i_start, _) = ranges[i];
 		let (_, prev_end) = ranges[i - 1];
-		if i_start > prev_end + 1 {
-			return prev_end + 1;
+		if i_start > prev_end.saturating_add(1) {
+			return prev_end.saturating_add(1);
 		}
 	}
-	ranges.last().expect("Empty ranges").1 + 1
+	ranges.last().expect("Empty ranges").1.saturating_add(1)
 }
 
 
